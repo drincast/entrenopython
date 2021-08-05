@@ -10,6 +10,7 @@ PATH_RES_SOUND = 'res/sound'
 
 #initialize pygame
 pygame.init()
+pygame.font.init()
 
 #create the screen
 screen = pygame.display.set_mode((800, 600))
@@ -29,7 +30,9 @@ pygame.display.set_icon(icon)
 
 #text score
 score_value = 0
-font = pygame.font.Font('freesansbold.ttf', 32)
+#font = pygame.font.Font('freesansbold.ttf', 32)
+font = pygame.font.Font('/usr/share/fonts/truetype/lato/Lato-Hairline.ttf', 32)
+pygame.font.get_fonts()
 textX = 10
 textY = 10
 
@@ -48,9 +51,13 @@ flagRow = 0
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
+    
+#def set_font():
+    
 
 def show_score(x, y):
     score = font.render("score: " + str(score_value), True, (255, 255, 255))
+    return score
 
 #function for spawn the enemies ver 01
 def SpawnEnemies01(xInitPositionEnemy, xEndPositionEnemy, yInitPositionEnemy, flagRow):
@@ -81,6 +88,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
+    screen.blit(show_score(10, 10), (0, 0))
 
     player(playerX, playerY)
     pygame.display.update()
