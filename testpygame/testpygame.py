@@ -1,3 +1,4 @@
+import platform
 import math
 import random
 
@@ -31,8 +32,8 @@ pygame.display.set_icon(icon)
 #text score
 score_value = 0
 #font = pygame.font.Font('freesansbold.ttf', 32)
-font = pygame.font.Font('/usr/share/fonts/truetype/lato/Lato-Hairline.ttf', 32)
-pygame.font.get_fonts()
+#font = pygame.font.Font('/usr/share/fonts/truetype/lato/Lato-Hairline.ttf', 32)
+#pygame.font.get_fonts()
 textX = 10
 textY = 10
 
@@ -52,10 +53,21 @@ flagRow = 0
 def player(x, y):
     screen.blit(playerImg, (x, y))
     
-#def set_font():
-    
+def set_font():
+    so = platform.system()
+    so = so.upper()
+    font = None
 
-def show_score(x, y):
+    print(so)
+
+    if so == 'WINDOWS':
+        font = pygame.font.Font(pygame.font.match_font('inkfree'), 32)
+    elif so == 'LINUX':
+        font = pygame.font.Font(pygame.font.match_font('lato'), 32)
+
+    return font    
+
+def show_score(font):
     score = font.render("score: " + str(score_value), True, (255, 255, 255))
     return score
 
@@ -74,6 +86,7 @@ def SpawnEnemies01(xInitPositionEnemy, xEndPositionEnemy, yInitPositionEnemy, fl
             xInitPositionEnemy = 34
             xEndPositionEnemy = 740   
 
+font = set_font()
 
 running = True
 while running:
@@ -89,7 +102,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             
-    screen.blit(show_score(10, 10), (0, 0))
+    screen.blit(show_score(font), (10, 10))
 
     player(playerX, playerY)
     pygame.display.update()
