@@ -22,8 +22,13 @@ background = pygame.image.load(configurations.PATH_RES_IMG + '/estrella-en-el-es
 enemy = pygame.image.load(configurations.PATH_RES_IMG + '/enemy.png')
 
 #load sound
-# mixer.music.load(configurations.PATH_RES_SOUND + '/background.wav')
+mixer.music.load(configurations.PATH_RES_SOUND + '/background.wav')
 # mixer.music.play(-1)
+#bullet sounds
+bulletSound = mixer.Sound(configurations.PATH_RES_SOUND + "/laser.wav")
+#explosion sounds
+explosionSound = mixer.Sound(configurations.PATH_RES_SOUND + "/explosion.wav")
+explosionSound.set_volume(0.4)
 
 #caption icon
 pygame.display.set_caption("Space Invader")
@@ -135,7 +140,8 @@ def set_background():
     screen.blit(background, (0, 0))
 
 def game_input():
-    global bullet_state, bulletX, bulletY, playerX, playerX_change, running
+    global bullet_state, bulletX, bulletY, bulletSound
+    global playerX, playerX_change, running
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -148,8 +154,7 @@ def game_input():
             elif event.key == pygame.K_RIGHT:
                 playerX_change = 5
             elif event.key == pygame.K_SPACE:
-                if bullet_state is "ready":
-                    bulletSound = mixer.Sound(configurations.PATH_RES_SOUND + "/laser.wav")
+                if bullet_state == "ready":                    
                     bulletSound.play()
                     # get the current x coordinate of ship
                     bulletX = playerX
@@ -176,7 +181,7 @@ def move_bullet():
         bulletY = 480
         bullet_state = "ready"
 
-    if bullet_state is "fire":
+    if bullet_state == "fire":
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
@@ -197,9 +202,7 @@ def enemy_collision(index):
     #collision
     global configurations, bulletY, bulletX, bullet_state, enemyX, enemyY, score_value
     collision = isCollision(enemyX[index], enemyY[index], bulletX, bulletY)
-    if collision:
-        explosionSound = mixer.Sound(configurations.PATH_RES_SOUND + "/explosion.wav")
-        explosionSound.set_volume(0.5)
+    if collision:        
         explosionSound.play()
         bulletY = 480
         bullet_state = "ready"
@@ -209,12 +212,12 @@ def enemy_collision(index):
 
 font = set_font()
 running = True
-
+CreateEnemies()
 while running:
     set_background()            
 
     # SpawnEnemies01(34, 740, 4, 0)
-    CreateEnemies()
+    #CreateEnemies()
     game_input()
     #move_playerX()
 
