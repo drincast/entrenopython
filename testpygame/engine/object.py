@@ -4,3 +4,4 @@ class Object:
         self.image = None
         self.postX = 0
         self.postY = 0
+        self.life = 0
