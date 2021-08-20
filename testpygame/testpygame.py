@@ -53,6 +53,16 @@ enemyX_change = []
 enemyY_change = []
 num_of_enemies = 6
 
+#bullet
+#ready - no see de bullet on the screen
+#fire - the bullet it is in movement
+bulletImg = pygame.image.load(configurations.PATH_RES_IMG + "/bullet.png")
+bulletX = 0
+bulletY = 480
+bulletX_change = 0
+bulletY_change = 10
+bullet_state = "ready"
+
 def CreateEnemies():
     for i in range(num_of_enemies):
         enemyImg.append(pygame.image.load(configurations.PATH_RES_IMG + '/enemy.png'))
@@ -105,17 +115,6 @@ def SpawnEnemies01(xInitPositionEnemy, xEndPositionEnemy, yInitPositionEnemy, fl
             xInitPositionEnemy = 34
             xEndPositionEnemy = 740   
 
-#bullet
-#ready - no see de bullet on the screen
-#fire - the bullet it is in movement
-
-bulletImg = pygame.image.load(configurations.PATH_RES_IMG + "/bullet.png")
-bulletX = 0
-bulletY = 480
-bulletX_change = 0
-bulletY_change = 10
-bullet_state = "ready"
-
 def fire_bullet(x, y):
     global bullet_state, bulletImg
     bullet_state = "fire"
@@ -136,7 +135,7 @@ def set_background():
     screen.blit(background, (0, 0))
 
 def game_input():
-    global bulletX, bullet_state, playerX, playerX_change, running
+    global bullet_state, bulletX, bulletY, playerX, playerX_change, running
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -159,6 +158,8 @@ def game_input():
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
+
+    move_playerX()
 
 def move_playerX():
     global playerX, playerX_change
@@ -194,10 +195,11 @@ def enemy_movement(index):
 
 def enemy_collision(index):
     #collision
-    global configurations, bulletY, bulletX, enemyX, enemyY, score_value
+    global configurations, bulletY, bulletX, bullet_state, enemyX, enemyY, score_value
     collision = isCollision(enemyX[index], enemyY[index], bulletX, bulletY)
     if collision:
         explosionSound = mixer.Sound(configurations.PATH_RES_SOUND + "/explosion.wav")
+        explosionSound.set_volume(0.5)
         explosionSound.play()
         bulletY = 480
         bullet_state = "ready"
@@ -206,24 +208,24 @@ def enemy_collision(index):
         enemyY[index] = random.randint(50, 150)
 
 font = set_font()
-
 running = True
+
 while running:
     set_background()            
 
     # SpawnEnemies01(34, 740, 4, 0)
     CreateEnemies()
     game_input()
-    move_playerX()
+    #move_playerX()
+
+    move_bullet()
 
     #enemy movement
     for i in range(num_of_enemies):
         enemy_movement(i)
         enemy_collision(i)       
 
-    screen.blit(show_score(font), (10, 10))
-
-    move_bullet()
+    screen.blit(show_score(font), (10, 10))    
 
     player(playerX, playerY)
     pygame.display.update()
