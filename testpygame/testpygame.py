@@ -234,3 +234,4 @@ while running:
     pygame.display.update()
     configurations.gameFPSClock.tick(configurations.GAME_FPS)
 
+object
