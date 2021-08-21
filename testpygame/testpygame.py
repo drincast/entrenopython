@@ -6,6 +6,7 @@ import pygame
 from pygame import mixer
 
 import configurations
+import engine.object as engine
 
 #initialize pygame
 pygame.init()
@@ -50,6 +51,11 @@ playerX = 370
 playerY = 480
 playerX_change = 0
 
+player = engine.Object("player")
+player.image = pygame.image.load(configurations.PATH_RES_IMG + "/player.png")
+player.postX = 100
+player.postY = 480
+
 #configuration Enemies
 enemyImg = []
 enemyX = []
@@ -79,7 +85,7 @@ def CreateEnemies():
 def enemy(x, y, i):
     screen.blit(enemyImg[i], (x, y))
 
-def player(x, y):
+def showPlayer(x, y):
     screen.blit(playerImg, (x, y))
     
 def set_font():
@@ -142,6 +148,7 @@ def set_background():
 def game_input():
     global bullet_state, bulletX, bulletY, bulletSound
     global playerX, playerX_change, running
+    global player
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -151,8 +158,10 @@ def game_input():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 playerX_change = -5
+                player.changeX = -5
             elif event.key == pygame.K_RIGHT:
                 playerX_change = 5
+                player.changeX = 5
             elif event.key == pygame.K_SPACE:
                 if bullet_state == "ready":                    
                     bulletSound.play()
@@ -163,8 +172,10 @@ def game_input():
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
+                player.changeX = 0
 
     move_playerX()
+    move_playerX2()
 
 def move_playerX():
     global playerX, playerX_change
@@ -174,6 +185,15 @@ def move_playerX():
         playerX = 0
     elif playerX >= 770:
         playerX = 770
+
+def move_playerX2():
+    global player
+
+    player.postX += player.changeX
+    if player.postX <= 0:
+        player.postX = 0
+    elif player.postX >= 770:
+        player.postX = 770
 
 def move_bullet():
     global bulletX, bulletY, bullet_state, bulletY_change
@@ -230,7 +250,8 @@ while running:
 
     screen.blit(show_score(font), (10, 10))    
 
-    player(playerX, playerY)
+    showPlayer(playerX, playerY)
+    showPlayer(player.postX, player.postY)
     pygame.display.update()
     configurations.gameFPSClock.tick(configurations.GAME_FPS)
 
