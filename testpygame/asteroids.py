@@ -28,11 +28,15 @@ bg = pygame.image.load(configurations.PATH_RES_IMG + '/asteroids/bg.jpg')
 debris = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'debris2_brown.png'))
 
 #functions
+# functions load init
+def draw_init(canvas):
+    canvas.fill(BLACK)
+    
+
 #draw game functions
 def draw(canvas):
-    global bg, time
+    global bg, debris, time
     posx = time*.3
-    canvas.fill(BLACK)
     canvas.blit(bg, (0,0))
     canvas.blit(debris, (posx,0))
     canvas.blit(debris, (posx-configurations.screenWidth, 0))
@@ -52,6 +56,9 @@ def update_screen():
     configurations.gameFPSClock.tick(configurations.GAME_FPS)
             
 
+#init call functions
+draw_init(screen)
+
 #game loop
 while running:
     draw(screen)
@@ -61,3 +68,5 @@ while running:
 
 pygame.quit()
 sys.exit()
+
+#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
