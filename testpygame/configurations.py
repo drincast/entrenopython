@@ -1,6 +1,8 @@
+import os
+
 #CONSTANTS
-PATH_RES_IMG = "res/img"
-PATH_RES_SOUND = 'res/sound'
+PATH_RES_IMG = os.path.join('res', 'img')
+PATH_RES_SOUND = os.path.join('res', 'sound')
 
 #Variables de configuracion
 GAME_FPS = 30

@@ -26,12 +26,21 @@ pygame.display.set_caption('Asteroids')
 #load images
 bg = pygame.image.load(configurations.PATH_RES_IMG + '/asteroids/bg.jpg')
 debris = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'debris2_brown.png'))
+ship = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship.png'))
 
 #functions
 # functions load init
 def draw_init(canvas):
     canvas.fill(BLACK)
     
+#rotate de ship
+def rot_center(image, angle):
+    orig_rect = image.get_rect()
+    rot_image = pygame.transform.rotate(image, angle)
+    rot_rect = orig_rect.copy()
+    rot_rect.center = rot_image.get_rect().center
+    rot_image = rot_image.subsurface(rot_rect).copy()
+    return rot_image
 
 #draw game functions
 def draw(canvas):
@@ -41,6 +50,7 @@ def draw(canvas):
     canvas.blit(debris, (posx,0))
     canvas.blit(debris, (posx-configurations.screenWidth, 0))
     time = time + 1
+    canvas.blit(rot_center(ship, time), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
     
 # handle inputs function
 def handle_input():
@@ -53,8 +63,7 @@ def handle_input():
 def update_screen():
     pygame.display.update()
     #fps.tick(60)
-    configurations.gameFPSClock.tick(configurations.GAME_FPS)
-            
+    configurations.gameFPSClock.tick(configurations.GAME_FPS)            
 
 #init call functions
 draw_init(screen)
@@ -65,6 +74,8 @@ while running:
     handle_input()
     #game_logic()
     update_screen()
+
+print(configurations.PATH_RES_IMG)
 
 pygame.quit()
 sys.exit()
