@@ -27,6 +27,7 @@ pygame.display.set_caption('Asteroids')
 bg = pygame.image.load(configurations.PATH_RES_IMG + '/asteroids/bg.jpg')
 debris = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'debris2_brown.png'))
 ship = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship.png'))
+ship_thrusted = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship_thrusted.png'))
 
 #variables for player
 ship_x = configurations.screenWidth/2 - 50
@@ -34,6 +35,8 @@ ship_y = configurations.screenHeight/2 - 50
 ship_angle = 0
 ship_is_rotating = False
 ship_direction = -1
+ship_is_forward = False
+ship_speed = 0
 
 #functions
 # functions load init
@@ -54,18 +57,33 @@ def rot_center(image, angle):
 
 #draw game functions
 def draw(canvas):
-    global bg, debris, ship, time
+    global bg, debris, time, running
+    global ship, ship_angle, ship_is_forward, ship_x, ship_y
     posx = time*.3    
     canvas.blit(bg, (0,0))
     canvas.blit(debris, (posx,0))
     canvas.blit(debris, (posx-configurations.screenWidth, 0))
     time = time + 1
     #canvas.blit(rot_center(ship, time), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
-    canvas.blit(rot_center(ship, ship_angle), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
+    #canvas.blit(rot_center(ship, ship_angle), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
+    canvas.blit(rot_center(ship, ship_angle), (ship_x, ship_y))
+
+    if (posx-configurations.screenWidth) >= 1:
+        print("time: " + str(time) + " - posx: " + str(posx) + " - width: " + str(configurations.screenWidth))
+        #running = False
+        time = 0
+
+    if ship_is_forward:
+        canvas.blit(rot_center(ship_thrusted, ship_angle), (ship_x, ship_y))
+    else:
+        canvas.blit(rot_center(ship, ship_angle), (ship_x, ship_y))
+
+
     
 # handle inputs function
 def handle_input():
-    global running, ship_angle, ship_direction, ship_is_rotating
+    global running, ship_angle, ship_direction, ship_is_forward, ship_is_rotating
+    global ship_x, ship_y, ship_speed
 
     #opcion para dejar presionado tecla, es mas suave al cambio de la tecla
     # pressed = pygame.key.get_pressed()
@@ -88,11 +106,22 @@ def handle_input():
             elif event.key == pygame.K_RIGHT:
                 ship_is_rotating = True
                 ship_direction = -1
+            elif event.key == pygame.K_UP:
+                ship_is_forward = True
+                ship_speed = 10
         elif event.type == pygame.KEYUP:
             ship_is_rotating = False
+            ship_is_forward = False
             
     if ship_is_rotating:
         ship_angle = ship_angle + (10*ship_direction)
+
+    if ship_is_forward or ship_speed > 0:
+        ship_x = (ship_x + math.cos(math.radians(ship_angle))*ship_speed)
+        ship_y = (ship_y + -math.sin(math.radians(ship_angle))*ship_speed)
+        
+        if ship_is_forward == False:
+            ship_speed -= 0.2
 
 def update_screen():
     pygame.display.update()
