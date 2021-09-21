@@ -28,6 +28,7 @@ bg = pygame.image.load(configurations.PATH_RES_IMG + '/asteroids/bg.jpg')
 debris = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'debris2_brown.png'))
 ship = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship.png'))
 ship_thrusted = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship_thrusted.png'))
+asteroid = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'asteroid.png'))
 
 #variables for player
 ship_x = configurations.screenWidth/2 - 50
@@ -38,8 +39,23 @@ ship_direction = -1
 ship_is_forward = False
 ship_speed = 0
 
+#variables for asteroids
+asteroid_x = []
+asteroid_y = []
+asteroid_angle = []
+asteroid_amount = random.randint(0, 20)
+asteroid_speed = 2
+
 #functions
 # functions load init
+def init_game_data():
+    global asteroid_amount
+    #asteroids random position 
+    for i in range(0, asteroid_amount):
+        asteroid_x.append(random.randint(0, configurations.screenWidth))
+        asteroid_y.append(random.randint(0, configurations.screenHeight))
+        asteroid_angle.append(random.randint(0, 365))
+        
 def draw_init(canvas):
     canvas.fill(BLACK)
     
@@ -58,11 +74,16 @@ def rot_center(image, angle):
 #draw game functions
 def draw(canvas):
     global bg, debris, time, running
+    global asteroid, asteroid_amount, asteroid_x, asteroid_y
     global ship, ship_angle, ship_is_forward, ship_x, ship_y
     posx = time*.3    
     canvas.blit(bg, (0,0))
     canvas.blit(debris, (posx,0))
     canvas.blit(debris, (posx-configurations.screenWidth, 0))
+
+    for i in range(0,asteroid_amount):
+        canvas.blit(rot_center(asteroid,time), (asteroid_x[i], asteroid_y[i]))
+    
     time = time + 1
     #canvas.blit(rot_center(ship, time), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
     #canvas.blit(rot_center(ship, ship_angle), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
@@ -129,13 +150,43 @@ def update_screen():
     configurations.gameFPSClock.tick(configurations.GAME_FPS)            
 
 #init call functions
+init_game_data()
 draw_init(screen)
+
+#calculations
+def game_logic():
+    global ship_x, ship_y
+    #position asteroids and calculation limit of the screen
+    for i in range(0, asteroid_amount):
+        asteroid_x[i] = (asteroid_x[i] + math.cos(math.radians(asteroid_angle[i]))*asteroid_speed)
+        asteroid_y[i] = (asteroid_y[i] + math.cos(math.radians(asteroid_angle[i]))*asteroid_speed)
+
+        if asteroid_x[i] > configurations.screenWidth + 10:
+            asteroid_x[i] = 0
+        elif asteroid_x[i] < -10:
+            asteroid_x[i] = configurations.screenWidth
+
+        if asteroid_y[i] > configurations.screenHeight + 10:
+            asteroid_y[i] = 0
+        elif asteroid_y[i] < - 10:
+            asteroid_y[i] = configurations.screenHeight
+
+    #positin player cancilation limit of screen
+    if ship_x > configurations.screenWidth - 50:
+        ship_x = configurations.screenWidth - 50
+    elif ship_x < -50:
+        ship_x = -50
+
+    if ship_y > configurations.screenHeight - 50:
+        ship_y = configurations.screenHeight - 50
+    elif ship_y < -50:
+        ship_y = -50
 
 #game loop
 while running:
     draw(screen)
     handle_input()
-    #game_logic()
+    game_logic()
     update_screen()
 
 print(configurations.PATH_RES_IMG)
