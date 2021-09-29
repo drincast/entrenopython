@@ -48,10 +48,14 @@ asteroid_amount = random.randint(0, 20)
 asteroid_speed = 2
 
 #variables for bullet
-bullet_x = 0
-bullet_y = 0
-bullet_angle = 0
+# bullet_x = 0
+# bullet_y = 0
+# bullet_angle = 0
+bullet_x = []
+bullet_y = []
+bullet_angle = []
 bullet_speed = 5
+bullet_number = 0
 
 #varibles of tested
 pressedKey = False
@@ -129,13 +133,12 @@ def rot_center(image, angle):
 def draw(canvas):
     global bg, debris, time, running
     global asteroid, asteroid_amount, asteroid_x, asteroid_y
+    global bullet_number
     global ship, ship_angle, ship_is_forward, ship_x, ship_y
     posx = time*.3    
     canvas.blit(bg, (0,0))
     canvas.blit(debris, (posx,0))
     canvas.blit(debris, (posx-configurations.screenWidth, 0))
-
-    
 
     for i in range(0,asteroid_amount):
         canvas.blit(rot_center(asteroid,time), (asteroid_x[i], asteroid_y[i]))    
@@ -144,7 +147,6 @@ def draw(canvas):
     #canvas.blit(rot_center(ship, time), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
     #canvas.blit(rot_center(ship, ship_angle), (configurations.screenWidth/2 - 50, configurations.screenHeight/2 - 50))
     canvas.blit(rot_center(ship, ship_angle), (ship_x, ship_y))
-    
 
     if (posx-configurations.screenWidth) >= 1:
         print("time: " + str(time) + " - posx: " + str(posx) + " - width: " + str(configurations.screenWidth))
@@ -156,12 +158,14 @@ def draw(canvas):
     else:
         canvas.blit(rot_center(ship, ship_angle), (ship_x, ship_y))
 
-    canvas.blit(bullet, (bullet_x,bullet_y))
+    for i in range(0, bullet_number):
+        #canvas.blit(bullet, (bullet_x,bullet_y))
+        canvas.blit(bullet, (bullet_x[i],bullet_y[i]))
     
 # handle inputs function
 def handle_input():
     global running, ship_angle, ship_direction, ship_is_forward, ship_is_rotating, pressedKey
-    global bullet_x, bullet_y, bullet_angle
+    global bullet_angle, bullet_number, bullet_x, bullet_y
     global ship_x, ship_y, ship_speed
 
     #opcion para dejar presionado tecla, es mas suave al cambio de la tecla
@@ -189,10 +193,11 @@ def handle_input():
                 ship_is_forward = True
                 ship_speed = 10
             elif event.key == pygame.K_SPACE:
-                bullet_angle = ship_angle
-                bullet_x = ship_x + 45 + (25 * transforAngle_0To1_forX(bullet_angle))
-                # bullet_y = ship_y + 45 + (-20 * if ship_angle < 181 else 20)
-                bullet_y = ship_y + 45 + (25 * transforAngle_0To1_forY(bullet_angle))
+                bullet_angle.append(ship_angle)
+                bullet_x.append(ship_x + 45 + (25 * transforAngle_0To1_forX(bullet_angle[len(bullet_angle)-1])))
+                bullet_y.append(ship_y + 45 + (25 * transforAngle_0To1_forY(bullet_angle[len(bullet_angle)-1])))
+                # bullet_y = ship_y + 45 + (-20 * if ship_angle < 181 else 20)                
+                bullet_number += 1
                 pressedKey = True
         elif event.type == pygame.KEYUP:
             ship_is_rotating = False
@@ -209,13 +214,23 @@ def handle_input():
         if ship_is_forward == False:
             ship_speed -= 0.2
 
-def isCollision(objectAx, objectAy, objectBx, objectBy):
+def isCollision(objectAx, objectAy, objectBx, objectBy, _range):
     distance = math.sqrt(math.pow(objectAx - objectBx, 2) + math.pow(objectAy - objectBy, 2))
 
-    if distance < 27:
+    if distance < _range:
         return True
     else:
         return False
+
+def isCollitionWithBullet(objectAx, objectAy, _range):
+    global bullet_number
+    _isCollision = False
+
+    if bullet_number > 0:
+        for i in range(0, bullet_number):
+            _isCollision = isCollision(objectAx, objectAy, bullet_x[i], bullet_y[i], _range)
+
+    return _isCollision
 
 def update_screen():
     pygame.display.update()
@@ -229,37 +244,42 @@ draw_init(screen)
 #calculations
 def game_logic():
     global running, pressedKey
-    global bullet_x, bullet_y, bullet_angle
+    global bullet_angle, bullet_number, bullet_x, bullet_y
     global ship_x, ship_y
 
     #move of bullet
-    bullet_x = (bullet_x + math.cos(math.radians(bullet_angle))*bullet_speed)
-    bullet_y = (bullet_y + -math.sin(math.radians(bullet_angle))*bullet_speed)
-    if pressedKey:
-        print('bullet_y: ' + str(bullet_y) + " - angle: " + str(bullet_angle))
-        pressedKey = False
+    for i in range(0, bullet_number):        
+        bullet_x[i] = (bullet_x[i] + math.cos(math.radians(bullet_angle[i]))*bullet_speed)
+        bullet_y [i] = (bullet_y[i] + -math.sin(math.radians(bullet_angle[i]))*bullet_speed)
+        if pressedKey:
+            print('bullet_y: ' + str(bullet_y[i]) + " - angle: " + str(bullet_angle[i]))
+            pressedKey = False
 
     #position asteroids and calculation limit of the screen
     for i in range(0, asteroid_amount):
-        asteroid_x[i] = (asteroid_x[i] + math.cos(math.radians(asteroid_angle[i]))*asteroid_speed)
-        asteroid_y[i] = (asteroid_y[i] + -math.sin(math.radians(asteroid_angle[i]))*asteroid_speed)
+        if(isCollitionWithBullet(asteroid_x[i], asteroid_y[i], 20) == False):
+            asteroid_x[i] = (asteroid_x[i] + math.cos(math.radians(asteroid_angle[i]))*asteroid_speed)
+            asteroid_y[i] = (asteroid_y[i] + -math.sin(math.radians(asteroid_angle[i]))*asteroid_speed)
 
-        if asteroid_x[i] > configurations.screenWidth + 10:
-            asteroid_x[i] = 0
-        elif asteroid_x[i] < -10:
-            asteroid_x[i] = configurations.screenWidth
+            if asteroid_x[i] > configurations.screenWidth + 10:
+                asteroid_x[i] = 0
+            elif asteroid_x[i] < -10:
+                asteroid_x[i] = configurations.screenWidth
 
-        if asteroid_y[i] > configurations.screenHeight + 10:
-            asteroid_y[i] = 0
-        elif asteroid_y[i] < - 10:
-            asteroid_y[i] = configurations.screenHeight
+            if asteroid_y[i] > configurations.screenHeight + 10:
+                asteroid_y[i] = 0
+            elif asteroid_y[i] < - 10:
+                asteroid_y[i] = configurations.screenHeight
+        else:
+            asteroid_x[i] = -0
+            asteroid_y[i] = -0
 
         #collision player and asteroid
-        if isCollision(ship_x, ship_y, asteroid_x[i], asteroid_y[i]):
+        if isCollision(ship_x, ship_y, asteroid_x[i], asteroid_y[i], 27):
             print('Game over')
             running = False
 
-    #positin player cancilation limit of screen
+    #position player calculation limit of screen
     if ship_x > configurations.screenWidth - 50:
         ship_x = configurations.screenWidth - 50
     elif ship_x < -50:
@@ -269,8 +289,6 @@ def game_logic():
         ship_y = configurations.screenHeight - 50
     elif ship_y < -50:
         ship_y = -50
-
-    
 
 #game loop
 while running:
