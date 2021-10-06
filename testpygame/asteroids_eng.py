@@ -4,7 +4,9 @@ import pygame
 
 #imports me
 import configurations
-import engine.object as engine
+#import engine.thing as engine
+import engine.thing as engine
+import engine.collider as collider
 
 pygame.init()
 
@@ -31,7 +33,7 @@ debris = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids'
 
 #definition of game objects
 #the player - ship
-ship = engine.Object("ship")
+ship = engine.Thing("ship")
 ship.angle = 0
 ship.direction = -1
 ship.image = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship.png'))
@@ -42,23 +44,22 @@ ship.postY = configurations.screenHeight/2 - 50
 ship.speed = 0
 
 #thrusred of ship
-thrusted = engine.Object('thrusted') 
+thrusted = engine.Thing('thrusted') 
 thrusted.image = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'ship_thrusted.png'))
 
 #the asteroids
 #generic
-asteroid_amount = random.randint(1, 10)
+asteroid_amount = random.randint(1, 2)
 asteroidImg = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'asteroid.png'))
 asteroid = []
-# asteroid_x = []
-# asteroid_y = []
-# asteroid_angle = []
+clAsteroid = collider.Rectangle(75, 75)
 
 #the bullets
 bulletImg = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'asteroids', 'shot2.png'))
 bullet_number = 0
 bullet_speed = 5
 bullets = []
+clBullet = collider.Rectangle(10, 10)
 
 #varibles of tested
 pressedKey = False
@@ -69,12 +70,12 @@ def init_game_data():
     global asteroid_amount
     #asteroids random position 
     for i in range(0, asteroid_amount):
-        asteroid.append(engine.Object("asteroid"))
+        asteroid.append(engine.Thing("asteroid"))
         asteroid[i].image = asteroidImg
         asteroid[i].postX = random.randint(0, configurations.screenWidth)
         asteroid[i].postY = random.randint(0, configurations.screenHeight)
         asteroid[i].angle = random.randint(0, 365)
-        asteroid[i].speed = random.randint(0, 15)
+        asteroid[i].speed = random.randint(0, 6)
         
 def draw_init(canvas):
     canvas.fill(BLACK)
@@ -185,6 +186,7 @@ def handle_input():
 
     for event in pygame.event.get():        
         if event.type == pygame.QUIT:
+            print('event QUIT')
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
@@ -197,7 +199,7 @@ def handle_input():
                 ship.is_forward = True
                 ship.speed = 10
             elif event.key == pygame.K_SPACE:
-                bullets.append(engine.Object('bullet'))
+                bullets.append(engine.Thing('bullet'))
                 index = len(bullets) - 1
                 bullets[index].image = bulletImg
                 bullets[index].angle = ship.angle
@@ -234,7 +236,19 @@ def isCollitionWithBullet(objectAx, objectAy, _range):
 
     if bullet_number > 0:
         for i in range(0, bullet_number):
-            _isCollision = isCollision(objectAx, objectAy, bullet_x[i], bullet_y[i], _range)
+            _isCollision = isCollision(objectAx, objectAy, bullets[i].postX, bullets[i].postY, _range)
+
+    return _isCollision
+
+def isCollitionWithBullet2(objectAx, objectAy):
+    global bullet_number
+    _isCollision = False
+
+    if bullet_number > 0:
+        for i in range(0, bullet_number):
+            _isCollision = collider.RectangleCollision(objectAx-40, objectAy-40, clAsteroid.width, clAsteroid.height, 
+                    bullets[i].postX-10, bullets[i].postY-10, clBullet.width, clBullet.height)
+            #isCollision(objectAx, objectAy, bullets[i].postX, bullets[i].postY, _range)
 
     return _isCollision
 
@@ -255,15 +269,16 @@ def game_logic():
 
     #move of bullet
     for i in range(0, bullet_number):        
-        bullet_x[i] = (bullet_x[i] + math.cos(math.radians(bullet_angle[i]))*bullet_speed)
-        bullet_y [i] = (bullet_y[i] + -math.sin(math.radians(bullet_angle[i]))*bullet_speed)
+        bullets[i].postX = (bullets[i].postX + math.cos(math.radians(bullets[i].angle))*bullet_speed)
+        bullets[i].postY = (bullets[i].postY + -math.sin(math.radians(bullets[i].angle))*bullet_speed)
         if pressedKey:
-            print('bullet_y: ' + str(bullet_y[i]) + " - angle: " + str(bullet_angle[i]))
+            print('bullet_y: ' + str(bullets[i].postY) + " - angle: " + str(bullets[i].angle))
             pressedKey = False
 
     #position asteroids and calculation limit of the screen
     for i in range(0, asteroid_amount):
-        if(isCollitionWithBullet(asteroid[i].postX, asteroid[i].postY, 30) == False):
+        #if(isCollitionWithBullet(asteroid[i].postX, asteroid[i].postY, 30) == False):
+        if(isCollitionWithBullet2(asteroid[i].postX, asteroid[i].postY) == False):
             asteroid[i].postX = (asteroid[i].postX + math.cos(math.radians(asteroid[i].angle))*asteroid[i].speed)
             asteroid[i].postY = (asteroid[i].postY + -math.sin(math.radians(asteroid[i].angle))*asteroid[i].speed)
 

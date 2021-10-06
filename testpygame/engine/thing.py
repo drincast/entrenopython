@@ -1,4 +1,4 @@
-class Object:
+class Thing:
     def __init__(self, name):
         self.angle = 0
         self.changeX = 0
