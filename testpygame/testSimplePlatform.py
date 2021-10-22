@@ -2,8 +2,7 @@ import math, os, random, sys
 import pygame
 
 #imports me
-import configurations
-#import engine.thing as engine
+import configurations as config
 import engine.thing as engine
 import engine.collider as collider
 
@@ -12,42 +11,36 @@ import initThingGame as initTG
 pygame.init()
 
 #configurations
-configurations.gameFPSClock = pygame.time.Clock()
+config.gameFPSClock = pygame.time.Clock()
 time = 0
 running = True
 
-#colors
-WHITE = (255,255,255)
-RED   = (255,0,0)
-GREEN = (0,255,0)
-BLUE  = (0,0,255)
-BLACK = (0,0,0)
-
 #create of screen
 #size, flag= 0 (pygame.NOFRAME), depth, display, vsync
-screen = pygame.display.set_mode((configurations.screenWidth, configurations.screenHeight))
+screen = pygame.display.set_mode((config.screenWidth, config.screenHeight))
 pygame.display.set_caption('SimplePlatform')
 
 #define entities, object, things of the game
 player = engine.Thing("player1")
-player.image = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'test', 'object1.png'))
+player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
 initTG.initThingPlayer(player)
 print(player)
 
 #define dummys
-dy = configurations.screenHeight-120
+dy = config.screenHeight-120
 dummy01 = engine.Thing("dummy01")
-dummy01.image = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'test', 'dummy01.png'))
-initTG.initThingDummy(dummy01, configurations.screenWidth - 200, dy)
+dummy01.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
+initTG.initThingDummy(dummy01, config.screenWidth - 200, dy)
 
 dummy02 = engine.Thing("dummy02")
-dummy02.image = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'test', 'dummy01.png'))
+dummy02.image = dummy01.image
+#dummy02.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
 initTG.initThingDummy(dummy02, 100, dy)
 
 dummys = [dummy01, dummy02]
 
 #define bullet
-imgBullet01 = pygame.image.load(os.path.join(configurations.PATH_RES_IMG, 'test', 'bullet01.png'))
+imgBullet01 = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'bullet01.png'))
 bullets = []
 
 #functions
@@ -67,16 +60,16 @@ def drawDummys(canvas):
 
 def draw_init(canvas):
     print('draw_init')
-    canvas.fill(BLACK)
+    canvas.fill(config.BLACK)
 
 def draw(canvas):
     global dummy01
     global player
-    canvas.fill(BLACK)
+    canvas.fill(config.BLACK)
     drawDummys(canvas)
     canvas.blit(player.image, (player.postX, player.postY))
-    pygame.draw.circle(canvas, BLUE, (player.postX+5, player.postY+5), 3, 0)
-    pygame.draw.rect(canvas, RED, (dummy01.postX+5, dummy01.postY+5, 20, 50), 1)
+    pygame.draw.circle(canvas, config.BLUE, (player.postX+5, player.postY+5), 3, 0)
+    pygame.draw.rect(canvas, config.RED, (dummy01.postX+5, dummy01.postY+5, 20, 50), 1)
 
     for item in bullets:
         if(item.isMoving):
@@ -92,6 +85,8 @@ def PressDownKey(eventType):
     elif eventType == pygame.K_LEFT:
         player.direction = -1
         player.isMoving = True
+    elif eventType == pygame.K_UP:
+        player.isJump = True
     elif eventType == pygame.K_SPACE:        
         if(not player.isShooting):            
             player.isShooting = True
@@ -136,8 +131,12 @@ def handle_input():
             player.isShooting = False
 
 def update_screen():
+    global time
     pygame.display.update()
-    configurations.gameFPSClock.tick(configurations.GAME_FPS)
+    config.gameFPSClock.tick(config.GAME_FPS)
+    time = (time + 1, 0)[time >= 61]
+    
+
 
 #init call functions
 init_game_data()
@@ -145,13 +144,22 @@ draw_init(screen)
 
 #calculations
 def game_logic():
-    global bullets
+    global bullets, time
     global dummy01, dummys
     global player
     # print('game_logic')
 
     if(player.isMoving):
         player.postX += player.speed*player.direction
+
+    if(player.isJump):
+        player.postY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
+        if player.postY <= ((initTG.INI_POST_Y - player.limitJump) + 10):
+            player.directionY = 1
+        elif player.postY >= initTG.INI_POST_Y:
+            player.postY = initTG.INI_POST_Y
+            player.isJump = False
+            player.directionY = -1
 
     #collider section
     for i in range(0,len(dummys)):
@@ -161,9 +169,19 @@ def game_logic():
         if _isCollision:
             print('colisión ----')
 
+        for item in bullets:
+            _isCollision = collider.RectangleCollision(dummys[i].postX+5, dummys[i].postY+5, 20, 50, 
+                    item.postX+1, item.postY+1, 19, 9)
+            if _isCollision:
+                print('colision with bullet ----')
+                
+
     for item in bullets:
         if(item.isMoving):
-            item.postX = item.postX + (item.direction*item.speed)
+            item.postX = item.postX + (item.direction*(item.speed - item.decreseSpeed))
+            if(time%3 == 0):
+                item.decreseSpeed = (item.decreseSpeed + 1, 15)[item.decreseSpeed >= 15]
+            print(time, time%3)
         
         #este es el problema analizar bien para que se ejecuten las otras bullets
         if(player.isShooting and not item.isMoving):        
@@ -174,7 +192,7 @@ def game_logic():
                 item.isMoving = True            
                 player.isShooting = False
 
-        if(configurations.screenWidth + 5 < item.postX or -5 > item.postX):
+        if(config.screenWidth + 5 < item.postX or -5 > item.postX):
             if(item.postX != -100):
                 print(item.name)
                 print(bullets)
@@ -202,7 +220,7 @@ while running:
     game_logic()
     update_screen()
 
-print(configurations.PATH_RES_IMG)
+print(config.PATH_RES_IMG)
 
 pygame.quit()
 sys.exit()
