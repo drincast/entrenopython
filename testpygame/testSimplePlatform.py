@@ -104,6 +104,11 @@ def PressKey(pressed):
     elif pressed[pygame.K_LEFT] == 1:
         player.direction = -1
         player.isMoving = True
+    elif eventType == pygame.K_UP:
+        player.isJump = True
+    elif eventType == pygame.K_SPACE:        
+        if(not player.isShooting):            
+            player.isShooting = True
 
 def handle_input():
     global running
@@ -126,9 +131,15 @@ def handle_input():
             #     player.isMoving = True
             PressDownKey(event.key)
             
-        elif event.type == pygame.KEYUP:
-            player.isMoving = False
-            player.isShooting = False
+        elif event.type == pygame.KEYUP:            
+            if event.key == pygame.K_RIGHT:
+                if(pygame.key.get_pressed()[pygame.K_LEFT] != 1):
+                    player.isMoving = False
+            elif event.key == pygame.K_LEFT:
+                if(pygame.key.get_pressed()[pygame.K_RIGHT] != 1):
+                    player.isMoving = False
+            # player.isMoving = False
+            # player.isShooting = False
 
 def update_screen():
     global time
