@@ -8,3 +8,4 @@ class Thing:
         self.postX = 0
         self.postY = 0
         self.speed = 0
+        self.isMoving = False
