@@ -37,3 +37,8 @@ def initMoveBullet(bullet, x, y, direction):
     bullet.decreseSpeed = 0
     bullet.direction = direction
     bullet.isMoving = True
+
+def initThingOstacle(thing, x, y):
+    thing.type = 2
+    dummy.postY = y
+    dummy.postx = x

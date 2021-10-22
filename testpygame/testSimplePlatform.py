@@ -36,6 +36,7 @@ dummy02 = engine.Thing("dummy02")
 dummy02.image = dummy01.image
 #dummy02.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
 initTG.initThingDummy(dummy02, 100, dy)
+dummy02.type = 2
 
 dummys = [dummy01, dummy02]
 
@@ -146,8 +147,6 @@ def update_screen():
     pygame.display.update()
     config.gameFPSClock.tick(config.GAME_FPS)
     time = (time + 1, 0)[time >= 61]
-    
-
 
 #init call functions
 init_game_data()
@@ -160,6 +159,7 @@ def game_logic():
     global player
     # print('game_logic')
 
+    # player.changeX = player.postX
     if(player.isMoving):
         player.postX += player.speed*player.direction
 
@@ -177,15 +177,16 @@ def game_logic():
         _isCollision = collider.RectangleCollision(player.postX+5, player.postY+5, 20, 50, 
                     dummys[i].postX+5, dummys[i].postY+5, 20, 50)
         #si es en especifico, seria identificar dentro del ciclo la colisión
-        if _isCollision:
-            print('colisión ----')
+        if _isCollision:            
+            print('collisión ----')
+            if(dummys[i].type == 2):
+                player.isInterfere = True
 
         for item in bullets:
             _isCollision = collider.RectangleCollision(dummys[i].postX+5, dummys[i].postY+5, 20, 50, 
                     item.postX+1, item.postY+1, 19, 9)
             if _isCollision:
-                print('colision with bullet ----')
-                
+                print('colision with bullet ----')                
 
     for item in bullets:
         if(item.isMoving):
@@ -223,6 +224,8 @@ def game_logic():
 
     #recorrido de bullets para movimiento de bullets
 
+    # if(not player.isInterfere):
+    #     player.postX = player.changeX
 
 #game loop
 while running:
