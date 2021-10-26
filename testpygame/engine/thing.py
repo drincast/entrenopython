@@ -1,3 +1,5 @@
+import engine.collider as col
+
 class Thing:
     def __init__(self, name):
         self.angle = 0
@@ -9,3 +11,8 @@ class Thing:
         self.postY = 0
         self.speed = 0
         self.isMoving = False
+        self.collider = None
+
+    def SetRectCollider(width, height):
+        coll = col.Rectangle(width, height)
+        return coll
