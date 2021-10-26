@@ -24,6 +24,7 @@ pygame.display.set_caption('SimplePlatform')
 player = engine.Thing("player1")
 player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
 initTG.initThingPlayer(player)
+player.SetRectCollider(20, 50)
 print(player)
 
 #define dummys
@@ -31,12 +32,14 @@ dy = config.screenHeight-120
 dummy01 = engine.Thing("dummy01")
 dummy01.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
 initTG.initThingDummy(dummy01, config.screenWidth - 200, dy)
+dummy01.SetRectCollider(20, 50)
 
 dummy02 = engine.Thing("dummy02")
 dummy02.image = dummy01.image
 #dummy02.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
 initTG.initThingDummy(dummy02, 100, dy)
 dummy02.type = 2
+dummy02.SetRectCollider(20, 50)
 
 dummys = [dummy01, dummy02]
 
@@ -52,6 +55,7 @@ def init_game_data():
     for i in range(player.munition):
         bullets.append(engine.Thing("bullet0" + str(i)))
         initTG.initBullet(bullets[i])
+        dummy02.SetRectCollider(19, 9)
     #print('init_game_data')
 
 def drawDummys(canvas):
@@ -105,9 +109,9 @@ def PressKey(pressed):
     elif pressed[pygame.K_LEFT] == 1:
         player.direction = -1
         player.isMoving = True
-    elif eventType == pygame.K_UP:
+    elif pressed[pygame.K_UP]:
         player.isJump = True
-    elif eventType == pygame.K_SPACE:        
+    elif pressed[pygame.K_SPACE]:        
         if(not player.isShooting):            
             player.isShooting = True
 
@@ -174,8 +178,10 @@ def game_logic():
 
     #collider section
     for i in range(0,len(dummys)):
-        _isCollision = collider.RectangleCollision(player.postX+5, player.postY+5, 20, 50, 
-                    dummys[i].postX+5, dummys[i].postY+5, 20, 50)
+        # _isCollision = collider.RectangleCollision(player.postX+5, player.postY+5, 20, 50, 
+        #             dummys[i].postX+5, dummys[i].postY+5, 20, 50)
+        
+        _isCollision = collider.RectangleCollisionThing(player, dummys[i])
         #si es en especifico, seria identificar dentro del ciclo la colisión
         if _isCollision:            
             print('collisión ----')
@@ -185,6 +191,7 @@ def game_logic():
         for item in bullets:
             _isCollision = collider.RectangleCollision(dummys[i].postX+5, dummys[i].postY+5, 20, 50, 
                     item.postX+1, item.postY+1, 19, 9)
+            # _isCollision = collider.RectangleCollisionThing(dummys[i], item)
             if _isCollision:
                 print('colision with bullet ----')                
 

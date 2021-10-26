@@ -29,6 +29,7 @@ def initBullet(bullet):
     bullet.speed = 20
     bullet.direction = 1
     bullet.decreseSpeed = 0
+    bullet.SetRectCollider(19, 9)
 
 def initMoveBullet(bullet, x, y, direction):
     bullet.postX = x+(bullet.speed*direction)
