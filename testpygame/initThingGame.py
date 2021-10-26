@@ -1,13 +1,20 @@
-import configurations
+import configurations as config
+
+#constants
+INI_POST_Y = config.screenHeight-120
 
 def initThingPlayer(player):
-    player.postX = configurations.screenWidth/2 - 50
-    player.postY = configurations.screenHeight-120
+    player.postX = config.screenWidth/2 - 50
+    player.postY = INI_POST_Y
     player.speed = 5
     player.direction = 1
     player.isMoving = False
     player.munition = 3
     player.isShooting = False
+    player.isJump = False
+    player.incrementJump = 6
+    player.limitJump = 90
+    player.directionY = -1
 
 def initThingDummy(dummy, x, y):
     dummy.postX = x
@@ -19,12 +26,19 @@ def initThingDummy(dummy, x, y):
 def initBullet(bullet):
     bullet.postX = -100
     bullet.postY = -100
-    bullet.speed = 5
+    bullet.speed = 20
     bullet.direction = 1
+    bullet.decreseSpeed = 0
 
 def initMoveBullet(bullet, x, y, direction):
     bullet.postX = x+(bullet.speed*direction)
     bullet.postY = y+10
-    bullet.speed = 5
+    bullet.speed = 20
+    bullet.decreseSpeed = 0
     bullet.direction = direction
     bullet.isMoving = True
+
+def initThingObstacle(thing, x, y):
+    thing.type = 2
+    dummy.postY = y
+    dummy.postx = x
