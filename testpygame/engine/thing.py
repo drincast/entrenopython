@@ -17,6 +17,9 @@ class Thing:
         self.speed = 0
         self.type = 1 #[1 - player, 2 - Obstacle, etc]
 
-    def SetRectCollider(self, width, height):
-        self.collider = col.Rectangle(width, height)
+    def SetRectCollider(self, width, height, vadd):
+        self.collider = col.Rectangle(width, height, vadd)
+
+    def SetLineCollider(self, type, direction, x, y, width, height):
+        self.collider = col.SolidSurface(type, direction, (x, y, width, height))
         

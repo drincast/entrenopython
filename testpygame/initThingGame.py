@@ -5,6 +5,7 @@ INI_POST_Y = config.screenHeight-120
 
 def initThingPlayer(player):
     player.postX = config.screenWidth/2 - 50
+    player.changeX = player.postX
     player.postY = INI_POST_Y
     player.speed = 5
     player.direction = 1
@@ -29,7 +30,7 @@ def initBullet(bullet):
     bullet.speed = 20
     bullet.direction = 1
     bullet.decreseSpeed = 0
-    bullet.SetRectCollider(19, 9)
+    bullet.SetRectCollider(0, 19, 9)
 
 def initMoveBullet(bullet, x, y, direction):
     bullet.postX = x+(bullet.speed*direction)
@@ -43,3 +44,8 @@ def initThingObstacle(thing, x, y):
     thing.type = 2
     dummy.postY = y
     dummy.postx = x
+
+def initThingSurfaceV(thing, direction, x, y, width, height):
+    thing.postX = x
+    thing.postY = y
+    thing.SetLineCollider(1, direction, x, y, width, height)

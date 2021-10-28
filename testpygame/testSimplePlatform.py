@@ -7,6 +7,7 @@ import engine.thing as engine
 import engine.collider as collider
 
 import initThingGame as initTG
+import gamelogic as gamelogic
 
 pygame.init()
 
@@ -24,28 +25,32 @@ pygame.display.set_caption('SimplePlatform')
 player = engine.Thing("player1")
 player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
 initTG.initThingPlayer(player)
-player.SetRectCollider(20, 50)
-print(player)
+player.SetRectCollider(5, 20, 50)
 
 #define dummys
 dy = config.screenHeight-120
 dummy01 = engine.Thing("dummy01")
 dummy01.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
 initTG.initThingDummy(dummy01, config.screenWidth - 200, dy)
-dummy01.SetRectCollider(20, 50)
+dummy01.SetRectCollider(5, 20, 50)
 
 dummy02 = engine.Thing("dummy02")
 dummy02.image = dummy01.image
 #dummy02.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
 initTG.initThingDummy(dummy02, 100, dy)
 dummy02.type = 2
-dummy02.SetRectCollider(20, 50)
+dummy02.SetRectCollider(5, 20, 50)
 
 dummys = [dummy01, dummy02]
 
 #define bullet
 imgBullet01 = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'bullet01.png'))
 bullets = []
+
+#define solid surfaces
+surface1 = engine.Thing("srufaceV01")
+surface1.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
+initTG.initThingSurfaceV(surface1, 1, config.screenWidth-30, dy, 30, 60)
 
 #functions
 def init_game_data():
@@ -55,7 +60,6 @@ def init_game_data():
     for i in range(player.munition):
         bullets.append(engine.Thing("bullet0" + str(i)))
         initTG.initBullet(bullets[i])
-        dummy02.SetRectCollider(19, 9)
     #print('init_game_data')
 
 def drawDummys(canvas):
@@ -75,6 +79,7 @@ def draw(canvas):
     canvas.blit(player.image, (player.postX, player.postY))
     pygame.draw.circle(canvas, config.BLUE, (player.postX+5, player.postY+5), 3, 0)
     pygame.draw.rect(canvas, config.RED, (dummy01.postX+5, dummy01.postY+5, 20, 50), 1)
+    canvas.blit(surface1.image, (surface1.postX, surface1.postY))
 
     for item in bullets:
         if(item.isMoving):
@@ -159,13 +164,22 @@ draw_init(screen)
 #calculations
 def game_logic():
     global bullets, time
-    global dummy01, dummys
+    global dummys
     global player
+    global surface1
     # print('game_logic')
 
     # player.changeX = player.postX
     if(player.isMoving):
-        player.postX += player.speed*player.direction
+        # player.postX += player.speed*player.direction
+        player.changeX += player.speed*player.direction
+
+        if(collider.SurfaceCollider(surface1, player.changeX, 30)):
+            if(surface1.collider.direction == 1):
+                player.changeX = surface1.postX - 1 - 30
+            else:
+                player.changeX = surface1.postX + 1 + 30
+            print('collision with surface')
 
     if(player.isJump):
         player.postY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
@@ -189,32 +203,33 @@ def game_logic():
                 player.isInterfere = True
 
         for item in bullets:
-            _isCollision = collider.RectangleCollision(dummys[i].postX+5, dummys[i].postY+5, 20, 50, 
-                    item.postX+1, item.postY+1, 19, 9)
+            # _isCollision = collider.RectangleCollision(dummys[i].postX+5, dummys[i].postY+5, 20, 50, 
+            #         item.postX+1, item.postY+1, 19, 9)
+            _isCollision = collider.RectangleCollisionThing(item, dummys[i])
             # _isCollision = collider.RectangleCollisionThing(dummys[i], item)
             if _isCollision:
-                print('colision with bullet ----')                
+                print('colision with bullet ----')
+                print('bullet: ', item.name, item.postX, item.postY, item.collider.width, item.collider.height
+                    , dummys[i].postX, dummys[i].postY, dummys[i].collider.width, dummys[i].collider.height)
 
     for item in bullets:
         if(item.isMoving):
             item.postX = item.postX + (item.direction*(item.speed - item.decreseSpeed))
             if(time%3 == 0):
                 item.decreseSpeed = (item.decreseSpeed + 1, 15)[item.decreseSpeed >= 15]
-            print(time, time%3)
+            # print(time, time%3)
         
-        #este es el problema analizar bien para que se ejecuten las otras bullets
         if(player.isShooting and not item.isMoving):        
             #for item in bullets:
             print(item.name, item.isMoving, item.postX)
             if(item.postX == -100):
                 initTG.initMoveBullet(item, player.postX, player.postY, player.direction)
                 item.isMoving = True            
-                player.isShooting = False
+                player.isShooting = False #the player already shoot
 
         if(config.screenWidth + 5 < item.postX or -5 > item.postX):
             if(item.postX != -100):
                 print(item.name)
-                print(bullets)
             item.postX = -100
             item.isMoving = False        
 
@@ -234,11 +249,14 @@ def game_logic():
     # if(not player.isInterfere):
     #     player.postX = player.changeX
 
+    player.postX = player.changeX
+
 #game loop
 while running:
     draw(screen)
     handle_input()
     game_logic()
+    # gamelogic.GameLogic(bullets, time, dummys, player)
     update_screen()
 
 print(config.PATH_RES_IMG)
