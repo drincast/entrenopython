@@ -23,22 +23,20 @@ pygame.display.set_caption('SimplePlatform')
 
 #define entities, object, things of the game
 player = engine.Thing("player1")
-player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
+# player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
+player.initThingBasic(config.screenWidth/2 - 50, config.screenHeight-120, 60, 30, 'object1.png', 5)
 initTG.initThingPlayer(player)
 player.SetRectCollider(5, 20, 50)
 
 #define dummys
 dy = config.screenHeight-120
 dummy01 = engine.Thing("dummy01")
-dummy01.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
-initTG.initThingDummy(dummy01, config.screenWidth - 200, dy)
+# dummy01.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
+dummy01.initThingBasic(config.screenWidth - 200, dy, 60, 30, 'dummy01.png', 5, 2)
 dummy01.SetRectCollider(5, 20, 50)
 
 dummy02 = engine.Thing("dummy02")
-dummy02.image = dummy01.image
-#dummy02.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
-initTG.initThingDummy(dummy02, 100, dy)
-dummy02.type = 2
+dummy02.initThingBasic(100, dy, 60, 30, dummy01.image, 5, 2)
 dummy02.SetRectCollider(5, 20, 50)
 
 dummys = [dummy01, dummy02]
@@ -49,8 +47,9 @@ bullets = []
 
 #define solid surfaces
 surface1 = engine.Thing("srufaceV01")
-surface1.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'dummy01.png'))
-initTG.initThingSurfaceV(surface1, 1, config.screenWidth-30, dy, 30, 60)
+surface1.image = dummy01.image
+surface1.initThingBasic(config.screenWidth-30, dy, 60, 30, dummy01.image, 0, 4)
+initTG.initThingSurfaceV(surface1, 1)
 
 #functions
 def init_game_data():
@@ -59,6 +58,7 @@ def init_game_data():
     
     for i in range(player.munition):
         bullets.append(engine.Thing("bullet0" + str(i)))
+        bullets[i].initThingBasic(-100, -100, 10, 20, imgBullet01, 20, 3)
         initTG.initBullet(bullets[i])
     #print('init_game_data')
 
@@ -90,10 +90,10 @@ def PressDownKey(eventType):
     if eventType == pygame.K_ESCAPE:
         running = False
     elif eventType == pygame.K_RIGHT:
-        player.direction = 1
+        player.directionX = 1
         player.isMoving = True
     elif eventType == pygame.K_LEFT:
-        player.direction = -1
+        player.directionX = -1
         player.isMoving = True
     elif eventType == pygame.K_UP:
         player.isJump = True
@@ -109,10 +109,10 @@ def PressKey(pressed):
     if pressed[pygame.K_ESCAPE]:
         running = False    
     elif pressed[pygame.K_RIGHT] == 1:
-        player.direction = 1
+        player.directionX = 1
         player.isMoving = True
     elif pressed[pygame.K_LEFT] == 1:
-        player.direction = -1
+        player.directionX = -1
         player.isMoving = True
     elif pressed[pygame.K_UP]:
         player.isJump = True
@@ -131,14 +131,6 @@ def handle_input():
             print('event QUIT')
             running = False
         elif event.type == pygame.KEYDOWN:
-            # if event.key == pygame.K_ESCAPE:
-            #     running = False
-            # elif event.key == pygame.K_RIGHT:
-            #     player.direction = 1
-            #     player.isMoving = True
-            # elif event.key == pygame.K_LEFT:
-            #     player.direction = -1
-            #     player.isMoving = True
             PressDownKey(event.key)
             
         elif event.type == pygame.KEYUP:            
@@ -171,15 +163,16 @@ def game_logic():
 
     # player.changeX = player.postX
     if(player.isMoving):
-        # player.postX += player.speed*player.direction
-        player.changeX += player.speed*player.direction
+        player.changeX = player.postX + (player.speed*player.directionX)
 
-        if(collider.SurfaceCollider(surface1, player.changeX, 30)):
-            if(surface1.collider.direction == 1):
+        print(player.postX, player.changeX)
+        if(collider.SurfaceCollider(surface1, player)):
+            print(player.changeX)
+            if(player.directionX == 1):
                 player.changeX = surface1.postX - 1 - 30
             else:
                 player.changeX = surface1.postX + 1 + 30
-            print('collision with surface')
+            print('collision with surface', player.postX, player.changeX)
 
     if(player.isJump):
         player.postY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
@@ -214,7 +207,7 @@ def game_logic():
 
     for item in bullets:
         if(item.isMoving):
-            item.postX = item.postX + (item.direction*(item.speed - item.decreseSpeed))
+            item.postX = item.postX + (item.directionX*(item.speed - item.decreseSpeed))
             if(time%3 == 0):
                 item.decreseSpeed = (item.decreseSpeed + 1, 15)[item.decreseSpeed >= 15]
             # print(time, time%3)
@@ -223,7 +216,7 @@ def game_logic():
             #for item in bullets:
             print(item.name, item.isMoving, item.postX)
             if(item.postX == -100):
-                initTG.initMoveBullet(item, player.postX, player.postY, player.direction)
+                initTG.initMoveBullet(item, player.postX, player.postY, player.directionX)
                 item.isMoving = True            
                 player.isShooting = False #the player already shoot
 
@@ -250,6 +243,7 @@ def game_logic():
     #     player.postX = player.changeX
 
     player.postX = player.changeX
+    # print(player.postX)
 
 #game loop
 while running:
