@@ -26,7 +26,8 @@ player = engine.Thing("player1")
 # player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
 player.initThingBasic(config.screenWidth/2 - 50, config.screenHeight-120, 60, 30, 'object1.png', 5)
 initTG.initThingPlayer(player)
-player.SetRectCollider(5, 20, 50)
+# player.SetRectCollider(5, 20, 50)
+player.SetRectCollider(20, 50, 5)
 
 #define dummys
 dy = config.screenHeight-120
@@ -166,7 +167,7 @@ def game_logic():
         player.changeX = player.postX + (player.speed*player.directionX)
 
         print(player.postX, player.changeX)
-        if(collider.SurfaceCollider(surface1, player)):
+        if(collider.SurfaceCollider(surface1, player)[0] and collider.SurfaceCollider(surface1, player)[1]):
             print(player.changeX)
             if(player.directionX == 1):
                 player.changeX = surface1.postX - 1 - 30

@@ -26,8 +26,8 @@ def initMoveBullet(bullet, x, y, direction):
 
 def initThingObstacle(thing, x, y):
     thing.type = 2
-    dummy.postY = y
-    dummy.postx = x
+    thing.postY = y
+    thing.postx = x
 
 def initThingSurfaceV(thing, direction):
     thing.SetLineCollider(1, direction, thing.postX, thing.postY, thing.width, thing.height)

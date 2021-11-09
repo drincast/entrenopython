@@ -36,7 +36,7 @@ class Thing:
             self.image = image
 
     def SetRectCollider(self, width, height, vadd):
-        self.collider = col.Rectangle(width, height, vadd)
+        self.collider = col.Rectangle(vadd, width, height)
 
     def SetLineCollider(self, _type, direction, x, y, width, height):
         self.collider = col.SolidSurface(_type, direction, (x, y, width, height))
