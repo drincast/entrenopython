@@ -49,7 +49,7 @@ bullets = []
 #define solid surfaces
 surface1 = engine.Thing("srufaceV01")
 surface1.image = dummy01.image
-surface1.initThingBasic(config.screenWidth-30, dy, 60, 30, dummy01.image, 0, 4)
+surface1.initThingBasic(config.screenWidth-50, dy, 60, 30, dummy01.image, 0, 4)
 initTG.initThingSurfaceV(surface1, 1)
 
 #functions
@@ -165,24 +165,37 @@ def game_logic():
     # player.changeX = player.postX
     if(player.isMoving):
         player.changeX = player.postX + (player.speed*player.directionX)
+        print(player.postX, player.changeX)        
 
-        print(player.postX, player.changeX)
-        if(collider.SurfaceCollider(surface1, player)[0] and collider.SurfaceCollider(surface1, player)[1]):
-            print(player.changeX)
-            if(player.directionX == 1):
-                player.changeX = surface1.postX - 1 - 30
-            else:
-                player.changeX = surface1.postX + 1 + 30
-            print('collision with surface', player.postX, player.changeX)
-
-    if(player.isJump):
-        player.postY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
-        if player.postY <= ((initTG.INI_POST_Y - player.limitJump) + 10):
+    if(player.isJump):        
+        player.changeY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
+        # if player.changeY <= ((initTG.INI_POST_Y - player.limitJump) + 10):
+        if player.changeY <= ((player.iniPostY - player.limitJump) + 10):
             player.directionY = 1
-        elif player.postY >= initTG.INI_POST_Y:
-            player.postY = initTG.INI_POST_Y
+        elif player.changeY >= player.iniPostY: #initTG.INI_POST_Y:
+            player.changeY = player.iniPostY #initTG.INI_POST_Y
             player.isJump = False
             player.directionY = -1
+
+    if(collider.SurfaceCollider(surface1, player)[0][0] and collider.SurfaceCollider(surface1, player)[0][1]):
+        print(player.changeX)
+        if(player.directionX == 1):
+            player.changeX = surface1.postX - 1 - 30
+        else:
+            player.changeX = surface1.postX + 1 + 30
+
+        #identificar limite superior o inferior de surface y actualizar limitPostY
+        #idea: es identificar primero que colisiona si la parte Y inferior (directionY = 1) y saltar 
+        #la parte de posicionamiento x
+        if(player.directionX == 1):
+            player.changeY = surface1.postY - 1
+            if(player.changeY >= initTG.INI_POST_Y):
+                player.changeY = initTG.INI_POST_Y
+        # else:
+        #     player.changeX = surface1.postX + 1 + 30
+
+        
+        print('collision with surface', player.postX, player.changeX)
 
     #collider section
     for i in range(0,len(dummys)):
@@ -244,6 +257,7 @@ def game_logic():
     #     player.postX = player.changeX
 
     player.postX = player.changeX
+    player.postY = player.changeY
     # print(player.postX)
 
 #game loop

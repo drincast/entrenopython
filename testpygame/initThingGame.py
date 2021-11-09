@@ -5,12 +5,14 @@ INI_POST_Y = config.screenHeight-120
 
 def initThingPlayer(player):    
     player.changeX = player.postX
-    player.isMoving = False
-    player.munition = 3
-    player.isShooting = False
-    player.isJump = False
+    player.changeY = player.postY
     player.incrementJump = 6
+    player.iniPostY = INI_POST_Y
+    player.isJump = False
+    player.isMoving = False
+    player.isShooting = False
     player.limitJump = 90
+    player.munition = 3
 
 def initBullet(bullet):
     bullet.decreseSpeed = 0

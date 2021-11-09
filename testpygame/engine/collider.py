@@ -64,6 +64,8 @@ def RectangleCollisionThing(thing1, thing2):
 def SurfaceCollider(solidSurface, thing):
     collisionX = False
     collisionY = False
+    directionX = -1
+    directionY = -1
 
     surfaceWidth = solidSurface.postX + solidSurface.width
     thingWidth = thing.changeX + thing.width
@@ -72,15 +74,16 @@ def SurfaceCollider(solidSurface, thing):
     thingHeight = thing.changeY + thing.height
 
     if(thing.changeX >= solidSurface.postX and thing.changeX <= surfaceWidth):
-        collisionX = True
+        collisionX = True        
     elif(thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
+        directionX = 1
         collisionX = True
 
     if(thing.postY >= solidSurface.postY and thing.postY <= surfaceHeight):
-        collisionY = True
+        collisionY = True        
     elif(thingHeight >= solidSurface.postY and thingHeight <= surfaceHeight):
+        directionY = 1
         collisionY = True
     
-    print()
-    print([collisionX, collisionY]) 
-    return [collisionX, collisionY]
+    #print([[collisionX, collisionY], [directionX, directionY]]) 
+    return [[collisionX, collisionY], [directionX, directionY]]
