@@ -115,6 +115,7 @@ def SurfaceCollider2(solidSurface, thing):
     if (thingWidth >= solidSurface.postX 
         #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):
         and thingHeight >= solidSurface.postY):
+        
         print('collisionYPrevious', collisionYPrevious)
         print("choco surface por derecha -->")
         collisionX = True
