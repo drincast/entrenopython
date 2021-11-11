@@ -87,3 +87,37 @@ def SurfaceCollider(solidSurface, thing):
     
     #print([[collisionX, collisionY], [directionX, directionY]]) 
     return [[collisionX, collisionY], [directionX, directionY]]
+
+
+def ThingInSurfaceRangeY(thingY, thingHeight, surfaceY, surfaceHeight):
+    collisionY = False
+    
+    if((thingY >= surfaceY and thingY <= surfaceHeight)
+        or thingHeight >= surfaceY and thingHeight <= surfaceHeight):
+        collisionY = True
+    
+    return collisionY
+
+def SurfaceCollider2(solidSurface, thing):
+    collisionX = False
+    collisionY = False
+    directionX = -1
+    directionY = -1
+
+    surfaceWidth = solidSurface.postX + solidSurface.width
+    thingWidth = thing.changeX + thing.width
+
+    surfaceHeight = solidSurface.postY + solidSurface.height
+    thingHeight = thing.changeY + thing.height
+
+    collisionYPrevious = (thing.postY + thing.height >= solidSurface.postX)
+
+    if (thingWidth >= solidSurface.postX 
+        #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):
+        and thingHeight >= solidSurface.postY):
+        print('collisionYPrevious', collisionYPrevious)
+        print("choco surface por derecha -->")
+        collisionX = True
+
+    # return [[collisionX, collisionY], [directionX, directionY]]
+    return collisionX

@@ -165,7 +165,7 @@ def game_logic():
     # player.changeX = player.postX
     if(player.isMoving):
         player.changeX = player.postX + (player.speed*player.directionX)
-        print(player.postX, player.changeX)        
+        # print(player.postX, player.changeX)        
 
     if(player.isJump):        
         player.changeY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
@@ -177,8 +177,9 @@ def game_logic():
             player.isJump = False
             player.directionY = -1
 
-    if(collider.SurfaceCollider(surface1, player)[0][0] and collider.SurfaceCollider(surface1, player)[0][1]):
-        print(player.changeX)
+    #if(collider.SurfaceCollider(surface1, player)[0][0] and collider.SurfaceCollider(surface1, player)[0][1]):
+    if(collider.SurfaceCollider2(surface1, player)):
+        # print(player.changeX)
         if(player.directionX == 1):
             player.changeX = surface1.postX - 1 - 30
         else:
@@ -195,7 +196,7 @@ def game_logic():
         #     player.changeX = surface1.postX + 1 + 30
 
         
-        print('collision with surface', player.postX, player.changeX)
+        # print('collision with surface', player.postX, player.changeX)
 
     #collider section
     for i in range(0,len(dummys)):
