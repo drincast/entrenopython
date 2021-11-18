@@ -180,20 +180,26 @@ def game_logic():
     #if(collider.SurfaceCollider(surface1, player)[0][0] and collider.SurfaceCollider(surface1, player)[0][1]):
     if(collider.SurfaceCollider2(surface1, player)):
         # print(player.changeX)
-        if(player.directionX == 1):
-            player.changeX = surface1.postX - 1 - 30
-        else:
-            player.changeX = surface1.postX + 1 + 30
+        # if(player.directionX == 1):
+        #     player.changeX = surface1.postX - 1 - 30
+        # else:
+        #     player.changeX = surface1.postX + 1 + 30
 
         #identificar limite superior o inferior de surface y actualizar limitPostY
         #idea: es identificar primero que colisiona si la parte Y inferior (directionY = 1) y saltar 
         #la parte de posicionamiento x
-        if(player.directionX == 1):
-            player.changeY = surface1.postY - 1
-            if(player.changeY >= initTG.INI_POST_Y):
-                player.changeY = initTG.INI_POST_Y
+        # if(player.directionX == 1):
+        #     player.changeY = surface1.postY - 1
+        #     if(player.changeY >= initTG.INI_POST_Y):
+        #         player.changeY = initTG.INI_POST_Y
         # else:
         #     player.changeX = surface1.postX + 1 + 30
+
+        player.changeY = surface1.postY - surface1.height - 1
+        player.iniPostY = player.changeY
+    else:
+        player.iniPostY = initTG.INI_POST_Y
+
 
         
         # print('collision with surface', player.postX, player.changeX)

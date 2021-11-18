@@ -99,26 +99,27 @@ def ThingInSurfaceRangeY(thingY, thingHeight, surfaceY, surfaceHeight):
     return collisionY
 
 def SurfaceCollider2(solidSurface, thing):
-    collisionX = False
-    collisionY = False
-    directionX = -1
-    directionY = -1
+    collisionSurface = False
 
     surfaceWidth = solidSurface.postX + solidSurface.width
-    thingWidth = thing.changeX + thing.width
+    #thingWidth = thing.changeX + thing.width
+    thingWidth = thing.postX + thing.width
 
     surfaceHeight = solidSurface.postY + solidSurface.height
     thingHeight = thing.changeY + thing.height
 
-    collisionYPrevious = (thing.postY + thing.height >= solidSurface.postX)
+    collisionYPrevious = (thing.postY + thing.height >= solidSurface.postY)
 
-    if (thingWidth >= solidSurface.postX 
-        #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):
-        and thingHeight >= solidSurface.postY):
-        
-        print('collisionYPrevious', collisionYPrevious)
-        print("choco surface por derecha -->")
-        collisionX = True
+    #la parte inferior toco la superior
+    if(collisionYPrevious):
+        #if (thing.changeX >= solidSurface.postX and thing.changeX <= surfaceWidth):
+        if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
+            #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):        
+            print('collisionYPrevious', collisionYPrevious)
+            print("choco surface por derecha -->")
+            collisionSurface = True
+        elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
+            collisionSurface = True
 
     # return [[collisionX, collisionY], [directionX, directionY]]
-    return collisionX
+    return collisionSurface
