@@ -103,6 +103,10 @@ def PressDownKey(eventType):
             player.isShooting = True
             # for item in bullets:
             #     print(item.name, item.isMoving)
+    elif eventType == pygame.K_l:
+        print("clear")
+        print("-------------------------")
+            
 
 def PressKey(pressed):
     global running
@@ -170,6 +174,7 @@ def game_logic():
     if(player.isJump):        
         player.changeY += 5*(player.directionY) #up decrement position in y, -1 is for direction is up
         # if player.changeY <= ((initTG.INI_POST_Y - player.limitJump) + 10):
+        print("player.iniPostY - player.limitJump) + 10", player.iniPostY, player.limitJump, (player.iniPostY - player.limitJump) + 10)
         if player.changeY <= ((player.iniPostY - player.limitJump) + 10):
             player.directionY = 1
         elif player.changeY >= player.iniPostY: #initTG.INI_POST_Y:
@@ -195,9 +200,10 @@ def game_logic():
         # else:
         #     player.changeX = surface1.postX + 1 + 30
 
-        player.changeY = surface1.postY - surface1.height - 1
+        player.changeY = surface1.postY - player.height - 1
         player.iniPostY = player.changeY
     else:
+        player.changeY = player.changeY
         player.iniPostY = initTG.INI_POST_Y
 
 
