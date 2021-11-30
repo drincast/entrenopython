@@ -102,13 +102,12 @@ def SurfaceCollider2(solidSurface, thing):
     collisionSurface = False
 
     surfaceWidth = solidSurface.postX + solidSurface.width
-    #thingWidth = thing.changeX + thing.width
     thingWidth = thing.postX + thing.width
-
     surfaceHeight = solidSurface.postY + solidSurface.height
     thingHeight = thing.changeY + thing.height
 
-    collisionYPrevious = (thing.postY + thing.height >= solidSurface.postY)
+    #collisionYPrevious = (thing.postY + (thing.height/2) >= solidSurface.postY)
+    collisionYPrevious = (thing.postY + (thing.height/2) <= solidSurface.postY)
 
     #la parte inferior toco la superior
     if(collisionYPrevious):
