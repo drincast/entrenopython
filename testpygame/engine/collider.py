@@ -138,7 +138,7 @@ def ThingInSurfaceRangeY(thingY, thingHeight, surfaceY, surfaceHeight):
 
 def ColliderSurfaceForUp(solidSurface, thing):
     #([collX, collY], [collRight, collLeft], [collDown, collUp])
-    collisionSurface = [[0,0], [0,0], [0,0]]
+    collisionSurface = ([0,0], [0,0], [0,0])
     surfaceWidth = solidSurface.postX + solidSurface.width
     thingWidth = thing.postX + thing.width
     surfaceHeight = solidSurface.postY + solidSurface.height
@@ -149,13 +149,13 @@ def ColliderSurfaceForUp(solidSurface, thing):
 
     if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
         #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):        
-        print('collisionYPrevious', collisionSurface[1])
-        print("choco thing a su izquierda -->")
-        print("a nivel de thing.postX", thing.postX)
+        # print('collisionYPrevious', collisionSurface[1])
+        # print("choco thing a su izquierda -->")
+        # print("a nivel de thing.postX", thing.postX)
         collisionSurface[0][0] = True
         collisionSurface[1][1] = True
     elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
-        print("a nivel de thingWidth", thingWidth)
+        # print("a nivel de thingWidth", thingWidth)
         collisionSurface[0][0] = True
         collisionSurface[1][0] = True
 
