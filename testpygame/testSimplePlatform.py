@@ -196,7 +196,7 @@ def game_logic():
             player.isJump = False
             player.directionY = -1
 
-    CollisionSurfaceSquare(collider.SurfaceCollider2(surface1, player), surface1)
+    CollisionSurfaceSquare(collider.ColliderSurfaceForUp(surface1, player), surface1)
 
 
         

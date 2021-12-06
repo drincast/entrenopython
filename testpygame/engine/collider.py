@@ -98,7 +98,45 @@ def ThingInSurfaceRangeY(thingY, thingHeight, surfaceY, surfaceHeight):
     
     return collisionY
 
-def SurfaceCollider2(solidSurface, thing):
+# def SurfaceCollider2(solidSurface, thing):
+#     #([collX, collY], [collRight, collLeft], [collDown, collUp])
+#     collisionSurface = [[0,0], [0,0], [0,0]]
+#     surfaceWidth = solidSurface.postX + solidSurface.width
+#     thingWidth = thing.postX + thing.width
+#     surfaceHeight = solidSurface.postY + solidSurface.height
+#     thingHeight = thing.changeY + thing.height
+
+#     #coliciona visualmente en el lado de arriba del bloque o figura
+#     collisionSurface[0][1] = (thing.postY + (thing.height/2) <= solidSurface.postY)
+
+#     #la parte inferior toco la superior
+#     if(collisionSurface[0][1]):
+#         #if (thing.changeX >= solidSurface.postX and thing.changeX <= surfaceWidth):
+#         if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
+#             #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):        
+#             print('collisionYPrevious', collisionSurface[1])
+#             print("choco thing a su izquierda -->")
+#             print("a nivel de thing.postX", thing.postX)
+#             collisionSurface[0][0] = True
+#             collisionSurface[1][1] = True
+#         elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
+#             print("a nivel de thingWidth", thingWidth)
+#             collisionSurface[0][0] = True
+#             collisionSurface[1][1] = True
+#     else:
+#         if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
+#             print('thing colisionó a su izquierda', thing.postX)
+#             collisionSurface[0][0] = True
+#             collisionSurface[1][1] = True
+#         elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
+#             print('thing colicionó a su derecha', thingWidth)
+#             collisionSurface[0][0] = True
+#             collisionSurface[1][0] = True
+
+#     # return [[collisionX, collisionY], [directionX, directionY]]
+#     return collisionSurface
+
+def ColliderSurfaceForUp(solidSurface, thing):
     #([collX, collY], [collRight, collLeft], [collDown, collUp])
     collisionSurface = [[0,0], [0,0], [0,0]]
     surfaceWidth = solidSurface.postX + solidSurface.width
@@ -106,34 +144,21 @@ def SurfaceCollider2(solidSurface, thing):
     surfaceHeight = solidSurface.postY + solidSurface.height
     thingHeight = thing.changeY + thing.height
 
-    #coliciona visualmente en el lado de arriba del bloque o figura
+    #colisiona visualmente en el lado de arriba del bloque o figura
     collisionSurface[0][1] = (thing.postY + (thing.height/2) <= solidSurface.postY)
 
-    #la parte inferior toco la superior
-    if(collisionSurface[0][1]):
-        #if (thing.changeX >= solidSurface.postX and thing.changeX <= surfaceWidth):
-        if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
-            #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):        
-            print('collisionYPrevious', collisionSurface[1])
-            print("choco thing a su izquierda -->")
-            print("a nivel de thing.postX", thing.postX)
-            collisionSurface[0][0] = True
-            collisionSurface[1][1] = True
-        elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
-            print("a nivel de thingWidth", thingWidth)
-            collisionSurface[0][0] = True
-            collisionSurface[1][1] = True
-    else:
-        if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
-            print('thing colisionó a su izquierda', thing.postX)
-            collisionSurface[0][0] = True
-            collisionSurface[1][1] = True
-        elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
-            print('thing colicionó a su derecha', thingWidth)
-            collisionSurface[0][0] = True
-            collisionSurface[1][0] = True
+    if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
+        #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):        
+        print('collisionYPrevious', collisionSurface[1])
+        print("choco thing a su izquierda -->")
+        print("a nivel de thing.postX", thing.postX)
+        collisionSurface[0][0] = True
+        collisionSurface[1][1] = True
+    elif (thingWidth >= solidSurface.postX and thingWidth <= surfaceWidth):
+        print("a nivel de thingWidth", thingWidth)
+        collisionSurface[0][0] = True
+        collisionSurface[1][0] = True
 
-    # return [[collisionX, collisionY], [directionX, directionY]]
     return collisionSurface
 
 #TODO: mejorar el nombre de la función
