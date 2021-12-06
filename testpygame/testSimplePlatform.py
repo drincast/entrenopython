@@ -161,6 +161,16 @@ def update_screen():
 init_game_data()
 draw_init(screen)
 
+def CollisionSurfaceSquare(resCollision, surface):
+    if(resCollision[0][0] and resCollision[0][1]):
+        player.changeY = surface1.postY - player.height - 1
+        player.iniPostY = player.changeY
+    elif(resCollision[0][0] and not resCollision[0][1]):
+        if(resCollision[1][0]):
+            player.changeX = surface1.postX - surface1.width - 1
+        elif(resCollision[1][1]):
+            player.changeX = surface1.postX + surface1.width + 1
+
 #calculations
 def game_logic():
     global bullets, time
@@ -186,29 +196,7 @@ def game_logic():
             player.isJump = False
             player.directionY = -1
 
-    #if(collider.SurfaceCollider(surface1, player)[0][0] and collider.SurfaceCollider(surface1, player)[0][1]):
-    if(collider.SurfaceCollider2(surface1, player)):
-        # print(player.changeX)
-        # if(player.directionX == 1):
-        #     player.changeX = surface1.postX - 1 - 30
-        # else:
-        #     player.changeX = surface1.postX + 1 + 30
-
-        #identificar limite superior o inferior de surface y actualizar limitPostY
-        #idea: es identificar primero que colisiona si la parte Y inferior (directionY = 1) y saltar 
-        #la parte de posicionamiento x
-        # if(player.directionX == 1):
-        #     player.changeY = surface1.postY - 1
-        #     if(player.changeY >= initTG.INI_POST_Y):
-        #         player.changeY = initTG.INI_POST_Y
-        # else:
-        #     player.changeX = surface1.postX + 1 + 30
-
-        player.changeY = surface1.postY - player.height - 1
-        player.iniPostY = player.changeY
-    else:
-        player.changeY = player.changeY
-        player.iniPostY = initTG.INI_POST_Y
+    CollisionSurfaceSquare(collider.SurfaceCollider2(surface1, player), surface1)
 
 
         
