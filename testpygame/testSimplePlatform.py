@@ -26,7 +26,7 @@ player = engine.Thing("player1")
 # player.image = pygame.image.load(os.path.join(config.PATH_RES_IMG, 'test', 'object1.png'))
 player.initThingBasic(config.screenWidth/2 - 50, config.screenHeight-120, 60, 30, 'object1.png', 5)
 initTG.initThingPlayer(player)
-initTG.initThingCanJump(player, player.height + 30)
+initTG.initThingCanJump(player, 30)
 # player.SetRectCollider(5, 20, 50)
 player.SetRectCollider(20, 50, 5)
 
@@ -100,6 +100,8 @@ def PressDownKey(eventType):
     elif eventType == pygame.K_UP:
         player.isJump = True
         player.directionY = -1
+        player.posInitJump = player.changeY + player.height
+        player.limitJump = player.posInitJump - player.jumpValue
     elif eventType == pygame.K_SPACE:        
         if(not player.isShooting):            
             player.isShooting = True
@@ -122,8 +124,11 @@ def PressKey(pressed):
         player.directionX = -1
         player.isMoving = True
     elif pressed[pygame.K_UP]:
-        player.isJump = True
-        player.directionY = -1
+        if player.isJump == False:
+            player.isJump = True
+            player.directionY = -1
+            player.posInitJump = player.changeY + player.height
+            player.limitJump = player.posInitJump - player.jumpValue
     elif pressed[pygame.K_SPACE]:        
         if(not player.isShooting):            
             player.isShooting = True
@@ -165,6 +170,7 @@ def CollisionSurfaceSquare(resCollision, surface):
     if(resCollision[0][0] and resCollision[0][1]):
         player.changeY = surface1.postY - player.height - 1
         player.iniPostY = player.changeY
+        # player.posInitJump = player.changeY + player.height
     elif(resCollision[0][0] and not resCollision[0][1]):
         if(resCollision[1][0]):
             player.changeX = surface1.postX - surface1.width - 1
@@ -189,16 +195,25 @@ def game_logic():
         # if player.changeY <= ((initTG.INI_POST_Y - player.limitJump) + 10):
         # print("player.changeY", player.changeY, "player.limitJump", player.limitJump, "player.posInitJump", player.posInitJump,
         #      (player.posInitJump - player.limitJump))
-        if((player.changeY + player.height) <= (player.posInitJump - player.limitJump)): # + 10):
+        # if((player.changeY + player.height) <= (player.posInitJump - player.limitJump)): # + 10):
+        #     player.directionY = 1
+        # elif (player.changeY + player.height) >= player.posInitJump: #initTG.INI_POST_Y:
+        #     player.changeY = player.posInitJump - player.height #initTG.INI_POST_Y
+        #     player.isJump = False
+        #     player.directionY = -1
+        if ((player.changeY + player.height) <= player.limitJump):
             player.directionY = 1
-        elif (player.changeY + player.height) >= player.posInitJump: #initTG.INI_POST_Y:
-            player.changeY = player.posInitJump - player.height #initTG.INI_POST_Y
+        # elif (player.changeY + player.height) >= player.limitJump:
+        #     player.changeY = player.posInitJump - player.height #initTG.INI_POST_Y            
+        #     player.directionY = -1
+        #     print("uno", player.posInitJump, player.limitJump, (player.changeY + player.height))
+        elif (player.changeY + player.height) >= player.posInitJump:
             player.isJump = False
-            player.directionY = -1
+            player.changeY = player.posInitJump - player.height
+            print("dos", player.posInitJump, player.limitJump, (player.changeY + player.height))
+
 
     CollisionSurfaceSquare(collider.ColliderSurfaceForUp(surface1, player), surface1)
-
-
         
         # print('collision with surface', player.postX, player.changeX)
 

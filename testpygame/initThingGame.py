@@ -3,10 +3,9 @@ import configurations as config
 #constants
 INI_POST_Y = config.screenHeight-120
 
-def initThingCanJump(thing, limitJump):
+def initThingCanJump(thing, value):
     thing.isJump = False
-    thing.limitJump = limitJump
-    thing.posInitJump = thing.postY + thing.height    
+    thing.jumpValue = value
 
 def initThingPlayer(player):    
     player.changeX = player.postX
