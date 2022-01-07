@@ -71,12 +71,12 @@ def drawDummys(canvas):
 
 def draw_init(canvas):
     print('draw_init')
-    canvas.fill(config.BLACK)
+    canvas.fill(config.WHITE)
 
 def draw(canvas):
     global dummy01
     global player
-    canvas.fill(config.BLACK)
+    canvas.fill(config.WHITE)
     drawDummys(canvas)
     canvas.blit(player.image, (player.postX, player.postY))
     pygame.draw.circle(canvas, config.BLUE, (player.postX+5, player.postY+5), 3, 0)
@@ -98,10 +98,11 @@ def PressDownKey(eventType):
         player.directionX = -1
         player.isMoving = True
     elif eventType == pygame.K_UP:
-        player.isJump = True
-        player.directionY = -1
-        player.posInitJump = player.changeY + player.height
-        player.limitJump = player.posInitJump - player.jumpValue
+        if player.isJump == False:
+            player.isJump = True
+            player.directionY = -1
+            player.posInitJump = player.changeY + player.height
+            player.limitJump = player.posInitJump - player.jumpValue
     elif eventType == pygame.K_SPACE:        
         if(not player.isShooting):            
             player.isShooting = True
@@ -120,15 +121,17 @@ def PressKey(pressed):
     elif pressed[pygame.K_RIGHT] == 1:
         player.directionX = 1
         player.isMoving = True
+        print("1 - press k-right")
     elif pressed[pygame.K_LEFT] == 1:
         player.directionX = -1
         player.isMoving = True
     elif pressed[pygame.K_UP]:
         if player.isJump == False:
-            player.isJump = True
-            player.directionY = -1
-            player.posInitJump = player.changeY + player.height
-            player.limitJump = player.posInitJump - player.jumpValue
+            if player.isJump == False:
+                player.isJump = True
+                player.directionY = -1
+                player.posInitJump = player.changeY + player.height
+                player.limitJump = player.posInitJump - player.jumpValue
     elif pressed[pygame.K_SPACE]:        
         if(not player.isShooting):            
             player.isShooting = True
@@ -167,15 +170,23 @@ init_game_data()
 draw_init(screen)
 
 def CollisionSurfaceSquare(resCollision, surface):
+    global player
     if(resCollision[0][0] and resCollision[0][1]):
-        player.changeY = surface1.postY - player.height - 1
+        player.changeY = surface.postY - player.height - 1
         player.iniPostY = player.changeY
         # player.posInitJump = player.changeY + player.height
+        # collision in x - not change de postx
+        # if(resCollision[1][0]):
+        #     player.changeX = surface.postX - player.width + 2
+        # elif(resCollision[1][1]):
+        #     player.changeX = surface.postX + player.width - 2
+        
     elif(resCollision[0][0] and not resCollision[0][1]):
         if(resCollision[1][0]):
-            player.changeX = surface1.postX - surface1.width - 1
+            player.changeX = surface.postX - player.width - 1
+            print("changeX", player.changeX)
         elif(resCollision[1][1]):
-            player.changeX = surface1.postX + surface1.width + 1
+            player.changeX = surface.postX + player.width + 1
 
 #calculations
 def game_logic():
@@ -214,6 +225,7 @@ def game_logic():
 
 
     CollisionSurfaceSquare(collider.ColliderSurfaceForUp(surface1, player), surface1)
+    print(player.isMoving, "changeX2", player.changeX)
         
         # print('collision with surface', player.postX, player.changeX)
 
@@ -278,7 +290,7 @@ def game_logic():
 
     player.postX = player.changeX
     player.postY = player.changeY
-    # print(player.postX)
+    print(player.postX, (player.postX + player.width), surface1.postX)
 
 #game loop
 while running:

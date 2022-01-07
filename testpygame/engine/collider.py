@@ -140,14 +140,17 @@ def ColliderSurfaceForUp(solidSurface, thing):
     #([collX, collY], [collRight, collLeft], [collDown, collUp])
     collisionSurface = ([0,0], [0,0], [0,0])
     surfaceWidth = solidSurface.postX + solidSurface.width
-    thingWidth = thing.postX + thing.width
+    #thingWidth = thing.postX + thing.width
+    thingWidth = thing.changeX + thing.width
     surfaceHeight = solidSurface.postY + solidSurface.height
     thingHeight = thing.changeY + thing.height
 
     #colisiona visualmente en el lado de arriba del bloque o figura
-    collisionSurface[0][1] = (thing.postY + (thing.height/2) <= solidSurface.postY)
+    #collisionSurface[0][1] = (thing.postY + (thing.height/2) <= solidSurface.postY)
+    collisionSurface[0][1] = (thing.changeY + (thing.height/2) <= solidSurface.postY)
 
-    if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
+    # if (thing.postX >= solidSurface.postX and thing.postX <= surfaceWidth):
+    if (thing.changeX >= solidSurface.postX and thing.changeX <= surfaceWidth):
         #and ThingInSurfaceRangeY(thing.postY, thingHeight, solidSurface.postY, surfaceHeight)):        
         # print('collisionYPrevious', collisionSurface[1])
         # print("choco thing a su izquierda -->")
@@ -162,7 +165,7 @@ def ColliderSurfaceForUp(solidSurface, thing):
     return collisionSurface
 
 #TODO: mejorar el nombre de la función
-#this fuction is for dectect of collision with square and, the object thing
+#this function is for detect of collision with square and, the object thing
 #change of position on the top of surface
 def PNCollisionSquareSurfaceBelow(resCollision, thing, surface):
     if(resCollision[0][0] and resCollision[0][1]):
