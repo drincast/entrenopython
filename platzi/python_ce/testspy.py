@@ -17,4 +17,3 @@ name = input("Su nombre: ")
 age = int(input("Tu edad: "))
 
 print(f"Nombre: {name} - {age} años")
-
