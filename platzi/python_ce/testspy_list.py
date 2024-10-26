@@ -107,6 +107,7 @@ print('vlist_filter: ', vlist_filter)
 
 #Crear un Diccionario con List Comprehension -> Tienes dos listas, una de claves ["nombre", "edad", "ocupación"] 
 #y otra de valores ["Juan", 30, "Ingeniero"]. Crea un diccionario combinando ambas listas usando una List Comprehension.
+print('\nCrear diccionario apartir de 2 listar usando List Comprehension')
 vlist_keys = ["nombre", "edad", "ocupación"]
 vlist_values = ["Juan", 30, "Ingeniero"]
 #vdict_comp = {k: v for k, v in zip(vlist_keys, vlist_values)}
@@ -115,5 +116,40 @@ print('vlist_keys', vlist_keys)
 print('vlist_values', vlist_values)
 print('vdict_comp: ', vdict_comp)
 
+#Dada una lista de listas Calcula la matriz traspuesta utilizando una List Comprehension anidada.
+print('\nCrear Matriz Traspuesta con List Comprehension')
+vmatrix_base = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+vmatrix_base_transpose = [[vmatrix_base[i][j] for i in range(len(vmatrix_base[0]))] for j in range(len(vmatrix_base))]
+print('vmatrix_base', vmatrix_base)
+print('vmatrix_base_transpose', vmatrix_base_transpose)
+#vmatrix_base_transpose = [[vmatrix_base[j][i] for j in range(len(vmatrix_base))] for i in range(len(vmatrix_base[0]))]
+
+
+#Extraer Información de una Lista de Diccionarios
+#Extrae una lista de nombres de personas que viven en “Madrid” y tienen más de 30 años.
+print('\nExtraer Información de una Lista de Diccionarios (MAdrir y > 30)')
+vpeople = [
+    {"nombre": "Juan", "edad": 25, "ciudad": "Madrid"},
+    {"nombre": "Ana", "edad": 32, "ciudad": "Madrid"},
+    {"nombre": "Pedro", "edad": 35, "ciudad": "Barcelona"},
+    {"nombre": "Laura", "edad": 40, "ciudad": "Madrid"}
+]
+vpeople_madrid = [p["nombre"] for p in vpeople if p["ciudad"] == "Madrid" and p["edad"] > 30]
+print('vpeople', vpeople)
+print('vpeople_madrid', vpeople_madrid)
+
+
+print(range(len(vmatrix_base[0])), range(len(vmatrix_base)), len(vmatrix_base), len(vmatrix_base[0]))
+
+
+#List Comprehension con un else
+#Dada una lista de números [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], crea una nueva lista multiplicando 
+#por 2 los números pares y dejando los impares como están.
+print('\nList Comprehension con un else')
+vlist_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+vlist_numbers_result = [ i * 2 if i % 2 == 0 else i for i in vlist_numbers ]
+# vlist_numbers_result = [ i * 2  for i in vlist_numbers if i % 2 == 0]
+print('vlist_numbers', vlist_numbers)
+print('vlist_numbers_result', vlist_numbers_result)
 
 
