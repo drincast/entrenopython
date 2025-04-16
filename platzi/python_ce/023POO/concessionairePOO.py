@@ -7,19 +7,20 @@
 from tabulate import tabulate
 
 ############## Global Constans 
-HEADERS_VEHICLE = ["Disponible", "Marca", "Color", "Nombre", "Precio", "Tipo", "Condición"]
+HEADERS_VEHICLE = ["Disponible", "Marca", "Color", "id", "Nombre", "Precio", "Tipo", "Condición"]
 HEADERS_CUSTOMER = ["Habilitado", "balance", "Nombre", "Id"]
 
 ############## Class definitons 
 class Vehicle:
-    def __init__(self, available, brand, condition, color, name, price, type, ):
+    def __init__(self, available, brand, color, condition, id, name, price, type, ):
         self.available = available #puede ser que el vehiculo este en reparaciones
         self.brand = brand
         self.color = color
+        self.condition = condition
+        self.id = id
         self.name = name
         self.price = price
         self.type = type
-        self.condition = condition
 
     def sold(self):
         self.available = False
@@ -39,6 +40,9 @@ class Vehicle:
         # return {k: ("***" if k == "password" else v) for k, v in self.__dict__.items()}
 
 class Bike(Vehicle):
+    def __init__(self, available, brand, color, condition, id, name, price, type):
+        super().__init__(available, brand, condition, color, id, name, price, type)
+
     def start_engine(self):
         if self.available:
             return(f"La bicicleta {self.name} esta en marcha")
@@ -52,6 +56,9 @@ class Bike(Vehicle):
             return(f"La bicicleta {self.name} no esta disponible")
 
 class Car(Vehicle):
+    def __init__(self, available, brand, color, condition, id, name, price, type):
+        super().__init__(available, brand, color, condition, id, name, price, type)
+
     def start_engine(self):
         if self.available:
             return(f"El motor del carro {self.name} esta en marcha")
@@ -65,6 +72,9 @@ class Car(Vehicle):
             return(f"El carro {self.name} no esta disponible")
 
 class Truck(Vehicle):
+    def __init__(self, available, brand, color, condition, id, name, price, type):
+        super().__init__(available, brand, color, condition, id, name, price, type)
+
     def start_engine(self):
         if self.available:
             return(f"El motor del camión {self.name} esta en marcha")
@@ -125,10 +135,15 @@ class Customer:
     def show_user_data(self):
         print(f"Nombre: {self.name}")
         print(f"Balance: {self.balance}")
-        car_list = tool_get_vehicle_list(self.purchased_vehicles)
-        print(tabulate(car_list
-                       , HEADERS_VEHICLE
-                       , tablefmt="pretty"))
+        vehicle_list = tool_get_vehicle_list(self.purchased_vehicles)
+        
+        if len(vehicle_list) > 0:
+            print(tabulate(vehicle_list
+                        , HEADERS_VEHICLE
+                        , tablefmt="pretty"))
+            print("\n")
+        else:
+            print("No tiene vehiculos \n")
 
     def sell_vehicle(self, vehicle, concessionaire):
         sale_price = (vehicle.price - (vehicle.price*0.1))
@@ -136,7 +151,7 @@ class Customer:
         concessionaire.buy_used_car(vehicle)
         self.balance = self.balance + sale_price
         self.purchased_vehicles.remove(vehicle)
-        print(f"Has vendido el {vehicle.name} - {vehicle.brand} a {sale_price}, felicidades o ¿no?")
+        print(f"{self.name} has vendido el {vehicle.name} - {vehicle.brand} a {sale_price}, felicidades o ¿no?")
 
     def show_my_vehicles(self):
         print(f"Los carros de {self.name}")
@@ -166,6 +181,13 @@ class Concessionaire:
         profit_price = car.price + (car.price * 0.05)
         car.price = profit_price
         self.add_vehicle(car)        
+
+    def get_vehicle_for_id(self, id):
+        try:
+            vehicle = next((v for v in self.vehicles_sale if v.id == id), None)
+            return vehicle
+        except Exception as ex:
+            print(ex)
 
     def print_customer(self, customer):
         try:
@@ -236,8 +258,8 @@ class Concessionaire:
 
 def tool_get_vehicle_list(object):
     try:
-        car_list = [[c.available, c.brand, c.color, c.name, c.price, c.type, c.condition] for c in object]
-        return car_list
+        vehicle_list = [[c.available, c.brand, c.color, c.id, c.name, c.price, c.type, c.condition] for c in object]
+        return vehicle_list
     except Exception as ex:
         print(ex)
 
@@ -294,26 +316,26 @@ def tool_transform_object_attributes_to_list_of_list(object):
 #############################################################
 
 #los carriñios
-car1 = Car(True, "Toyota", "Nuevo", "Rojo", "Corolla", 25000, "Sedán")
-car2 = Car(True, "Honda", "Usado", "Azul", "Civic", 18000, "Hatchback")
-car3 = Car(False, "Ford", "Nuevo", "Blanco", "Mustang", 35000, "Deportivo")
-car4 = Car(True, "Chevrolet", "Usado", "Negro", "Camaro", 22000, "Deportivo")
-car5 = Car(True, "Nissan", "Nuevo", "Gris", "Altima", 28000, "Sedán")
-car6 = Car(False, "Volkswagen", "Usado", "Verde", "Jetta", 15000, "Sedán")
-car7 = Car(True, "BMW", "Nuevo", "Plateado", "X5", 45000, "SUV")
-car8 = Car(True, "Mercedes-Benz", "Usado", "Dorado", "C-Class", 30000, "Sedán")
-car9 = Car(False, "Audi", "Nuevo", "Azul Marino", "A4", 40000, "Sedán")
-car10 = Car(True, "Hyundai", "Usado", "Naranja", "Elantra", 17000, "Sedán")
-car11 = Car(True, "Volkswagen", "Nuevo", "Blanco", "Golf", 20000, "hatchback")
-car12 = Car(True, "BMW", "Usado", "Azul", "Serie 3", 30000, "Sedán")
+car1 = Car(True, "Toyota", "Nuevo", "Rojo", 1, "Corolla", 25000, "Sedán")
+car2 = Car(True, "Honda", "Usado", "Azul", 2, "Civic", 18000, "Hatchback")
+car3 = Car(False, "Ford", "Nuevo", "Blanco", 3, "Mustang", 35000, "Deportivo")
+car4 = Car(True, "Chevrolet", "Usado", "Negro", 4, "Camaro", 22000, "Deportivo")
+car5 = Car(True, "Nissan", "Nuevo", "Gris", 5, "Altima", 28000, "Sedán")
+car6 = Car(False, "Volkswagen", "Usado", "Verde", 6, "Jetta", 15000, "Sedán")
+car7 = Car(True, "BMW", "Nuevo", "Plateado", 7, "X5", 45000, "SUV")
+car8 = Car(True, "Mercedes-Benz", "Usado", "Dorado", 8, "C-Class", 30000, "Sedán")
+car9 = Car(False, "Audi", "Nuevo", "Azul Marino", 9, "A4", 40000, "Sedán")
+car10 = Car(True, "Hyundai", "Usado", "Naranja", 10, "Elantra", 17000, "Sedán")
+car11 = Car(True, "Volkswagen", "Nuevo", "Blanco", 11, "Golf", 20000, "hatchback")
+car12 = Car(True, "BMW", "Usado", "Azul", 12, "Serie 3", 30000, "Sedán")
 
 # bikes:
-bike1 = Bike(True, "Giant", "Nuevo", "Negro", "Trance X", 2500, "Cicla de montaña")
-bike2 = Bike(False, "Scott", "Usado", "Gris", "Scale 965", 1200, "Cicla de montaña")
+bike1 = Bike(True, "Giant", "Nuevo", "Negro", 13, "Trance X", 2500, "Cicla de montaña")
+bike2 = Bike(False, "Scott", "Usado", "Gris", 14, "Scale 965", 1200, "Cicla de montaña")
 
 #trucks
-truck1 = Truck(True, "Volvo", "Nuevo", "Gris", "FH16", 120000, "50 toneladas")
-truck2 = Truck(False, "Mercedes-Benz", "Usado", "Blanco", "Actros", 85000, "40 toneladas")
+truck1 = Truck(True, "Volvo", "Nuevo", "Gris", 15, "FH16", 120000, "50 toneladas")
+truck2 = Truck(False, "Mercedes-Benz", "Usado", "Blanco", 16, "Actros", 85000, "40 toneladas")
 
 # print(vehicle10.__dict__.items())
 # print(vars(vehicle10))
@@ -360,28 +382,40 @@ print(f"Balance: {concessionaire1.balance}")
 concessionaire1.show_vehicles()
 
 print("\n Compradores ...")
-customer1.tabular_print_info_customer()
-customer2.tabular_print_info_customer()
-customer3.tabular_print_info_customer()
+# imp_customer = next((p for p in concessionaire1.customers if p.user_id == 2), None)
+# imp_customer.tabular_print_info_customer()
+
+# al ser un tipo set (conjuntos) no se puede acceder al dat por medio del indice
+for element in concessionaire1.customers:
+    element.tabular_print_info_customer()
+
+# concessionaire1.customers[1].tabular_print_info_customer()
+# concessionaire1.customers[2].tabular_print_info_customer()
+# concessionaire1.customers[3].tabular_print_info_customer()
 
 #print(user1.get_dict_show_user_data(user1))
 
-customer1.buy_vehicle(car1, concessionaire1)
-customer2.buy_vehicle(car2, concessionaire1)
-customer3.buy_vehicle(car3, concessionaire1)
+print("\n Compradores Comprando Carriñios...")
+print("--------------------------------------------------------------------------------")
+
+# al ser un tipo set (conjuntos) no se puede acceder al dat por medio del indice
+for element in concessionaire1.customers:
+    if element.user_id == 1:
+        element.buy_vehicle(concessionaire1.get_vehicle_for_id(1), concessionaire1)
+    elif element.user_id == 2:
+        element.buy_vehicle(concessionaire1.get_vehicle_for_id(2), concessionaire1)
+    else:
+        element.buy_vehicle(concessionaire1.get_vehicle_for_id(3), concessionaire1)
 
 print("\n Compradores ...")
 print("--------------------------------------------------------------------------------")
-customer1.show_user_data()
-customer2.show_user_data()
-customer3.show_user_data()
-customer4.show_user_data()
+for element in concessionaire1.customers:
+    element.show_user_data()
 
 print("\n --------------------------------------------------------------------------------")
 concessionaire1.show_customers()
-
-a = list()
-b = set()
+# a = list()
+# b = set()
 
 # print(type(a), type(b))
 
@@ -393,11 +427,18 @@ print(f"Balance: {concessionaire1.balance}")
 concessionaire1.show_vehicles()
 
 print("\n usuario vende ...")
-customer1.sell_vehicle(car1, concessionaire1)
+imp_customer = next((p for p in concessionaire1.customers if p.user_id == 1), None)
+imp_customer_vehicle = next((p for p in imp_customer.purchased_vehicles if p.id == 1), None)
+imp_customer.sell_vehicle(car1, concessionaire1)
 
-print("\n Compradores ...")
-print("--------------------------------------------------------------------------------")
-customer1.show_user_data()
+print("\n --------------------------------------------------------------------------------")
+imp_customer.show_user_data()
+
+
+
+# print("\n concesionario ...")
+# print(f"Balance: {concessionaire1.balance}")
+# concessionaire1.show_vehicles()
 
 print("\n concesionario ...")
 print(f"Balance: {concessionaire1.balance}")
