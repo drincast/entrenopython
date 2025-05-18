@@ -65,7 +65,7 @@ async def process_order(order_id, items):
             payment_result = await process_payment(order_id)
 
         if payment_result:
-            print(f"\n✅ Orden [{order_id}] completada con éxito. Total: {total}\n")
+            print(f"\n\U00002705 Orden [{order_id}] completada con éxito. Total: {total}\n")
         else:
             # raise Exception(f"\n❌ Error al procesar el pago de la orden [{order_id}]\n")
             print(f"\n❌ Error al procesar el pago de la orden [{order_id}]\n")
