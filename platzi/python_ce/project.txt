@@ -1,0 +1,11 @@
+Sistema de gestión de reservas hotel
+
+1 - reservas
+    cada cliente puede hacer una reserva de una habitacion
+2 - pagos
+    procesamiento de pagos
+3 - clientes
+    gestion de los clientes
+4 - habitaciones
+    gestión de habitaciones
+
